@@ -222,3 +222,22 @@ From probing edtf.js 4.11.1 (not yet checked against the ISO 8601-2 text):
 
 - Rejected: qualifier next to `X` (`1982-?03-XX`, `XXXX-?03`), qualified seasons (`2001-21~`, `2001-~21`), trailing qualifier on one interval end with a prefix qualifier on the other (`1890~/1905-05-?03`), unequal precision in set ranges (`[1890..2020-12-25]`).
 - Error positions: syntax errors report `offset` and the offending token, which is enough for the advanced-mode character highlight. Grammar-level failures (qualified seasons) report only "No possible parsings", so advanced mode needs a generic fallback message.
+
+## Changes made during phase 1
+
+Found while building the core; the code and tests are the reference.
+
+- `Certainty` has a fifth value, `both` (`%`), for "about 1965?".
+- More edtf.js rules turned up: a season needs a known year (`XXXX-21` is rejected); seasons can't be interval or set ends; two-ended set ranges reject qualifiers in every position, while open-ended sets accept prefix qualifiers only; and an interval's end must _begin_ strictly after its start begins (`1966/196X` and `1965-06/1965` parse, but building them throws). The generator uses a candidate chain (natural form, then prefix form, then unqualified with a warning) rather than hand-coding every set rule.
+- Two-sided "between" collapses to a single date when both ends are the same.
+- edtf-humanize 0.1.0 lists every member of a set range. Core labels sets that contain ranges itself (each range in the locale's interval wording, joined with its set connectors) until that's fixed upstream.
+- In period mode, a lone decade gives `1920/1929` (story §3 and the prototype), not `196` (story §1). "until 1931" gives `/1931` (unknown start), as in the prototype.
+- `min`/`max` are inclusive ISO days, not years, so `max="today"` rejects 1 December this year.
+- `timeline` is left out of `Result` until phase 2, when the element draws it; `start`/`end` (`date`, `open`, `unknown`) carry what it needs.
+- Messages that the design gave as `{ code, params }` also carry English `text`.
+
+### More for edtf-humanize-js
+
+- `en` formats dates US-style ("March 12, 1982"); en-NZ, en-GB and en-AU users need day-first wording.
+- `196X` reads as "1960s (year unknown)", so decade-to-decade periods become "1960s (year unknown) to 1980s (year unknown)".
+- `/1931` reads as "unknown date to 1931".
