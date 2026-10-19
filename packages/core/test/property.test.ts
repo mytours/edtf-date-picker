@@ -3,6 +3,7 @@ import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import { resolveConfig } from '../src/config.js'
 import { compareIso } from '../src/dates.js'
+import { fromValue } from '../src/from-value.js'
 import { generate } from '../src/generate.js'
 import type { Certainty, DateParts, Endpoint, State } from '../src/model.js'
 
@@ -62,6 +63,23 @@ const state: fc.Arbitrary<State> = fc.oneof(
   fc.constant({ kind: 'unknown' as const }),
   fc.record({ kind: fc.constant('period' as const), start: endpoint, end: endpoint }),
 )
+
+describe('fromValue (property)', () => {
+  it('loads everything generate() writes back into state that writes the same value', () => {
+    fc.assert(
+      fc.property(state, (s) => {
+        const c =
+          s.kind === 'period' ? resolveConfig({ now: config.now, semantics: 'period' }) : config
+        const r = generate(s, c)
+        if (r.status !== 'valid' || r.value == null) return
+        const back = fromValue(r.value, c)
+        expect(back).not.toBeNull()
+        if (back) expect(generate(back, c).value).toBe(r.value)
+      }),
+      { numRuns: 5000 },
+    )
+  })
+})
 
 describe('generate (property)', () => {
   it('never emits a value edtf.js rejects', () => {

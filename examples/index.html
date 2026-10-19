@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en-NZ">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>edtf-input examples</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font:
+          17px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+      }
+      body {
+        margin: 0;
+        background: #eef1f5;
+        color: #141b26;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #0f141c;
+          color: #e8edf4;
+        }
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 24px 16px 64px;
+        display: grid;
+        gap: 32px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.6rem;
+      }
+      h2 {
+        margin: 0 0 4px;
+        font-size: 1.1rem;
+      }
+      p {
+        margin: 0 0 12px;
+      }
+      code,
+      pre {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.85rem;
+      }
+      pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        background: rgb(127 127 127 / 0.12);
+        padding: 8px 10px;
+        border-radius: 8px;
+        margin: 8px 0 0;
+      }
+      button[type='submit'] {
+        margin-top: 12px;
+        font: inherit;
+        font-weight: 700;
+        min-height: 44px;
+        padding: 0 20px;
+        border-radius: 8px;
+        border: 0;
+        background: #24539b;
+        color: #fff;
+      }
+    </style>
+    <!-- Built with `pnpm build`; from a CDN this is
+         https://cdn.jsdelivr.net/npm/edtf-input/dist/edtf-input.standalone.js -->
+    <script type="module" src="../packages/element/dist/edtf-input.standalone.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>edtf-input</h1>
+        <p>One element, configured for different jobs. Each form shows what it would submit.</p>
+      </header>
+
+      <section>
+        <h2>Photo submission</h2>
+        <p>No future dates, and a soft warning before the first photograph.</p>
+        <form>
+          <edtf-input
+            name="date"
+            earliest-name="date_earliest"
+            latest-name="date_latest"
+            label="When was this photo taken?"
+            hint="Don’t worry if you’re not sure. A rough guess is still really useful."
+            max="today"
+            warn-before="1826"
+            warn-message="That’s earlier than the oldest known photograph (1826). Is the year right?"
+            required
+          ></edtf-input>
+          <button type="submit">Submit</button>
+          <pre></pre>
+        </form>
+      </section>
+
+      <section>
+        <h2>Editing a saved value</h2>
+        <p>The value loads back into the guided options.</p>
+        <form>
+          <edtf-input name="date" label="Date" value="1982-?03-~12"></edtf-input>
+          <pre></pre>
+        </form>
+      </section>
+
+      <section>
+        <h2>Upcoming event</h2>
+        <form>
+          <edtf-input
+            name="date"
+            label="When is the festival?"
+            hint="Not confirmed yet? Give your best estimate."
+            min="today"
+          ></edtf-input>
+          <pre></pre>
+        </form>
+      </section>
+
+      <section>
+        <h2>Period</h2>
+        <p>Start and end panels come in phase 3; for now, type it.</p>
+        <form>
+          <edtf-input
+            name="date"
+            semantics="period"
+            label="When was the business operating?"
+          ></edtf-input>
+          <pre></pre>
+        </form>
+      </section>
+    </main>
+    <script type="module">
+      for (const form of document.querySelectorAll('form')) {
+        const out = form.querySelector('pre')
+        const show = () => {
+          const entries = [...new FormData(form).entries()]
+          const input = form.querySelector('edtf-input')
+          out.textContent =
+            entries.map(([k, v]) => `${k}=${v}`).join('\n') +
+            (input.checkValidity() ? '' : `\n(invalid: ${input.validationMessage})`)
+        }
+        form.addEventListener('edtf-change', show)
+        form.addEventListener('submit', (e) => {
+          e.preventDefault()
+          if (form.reportValidity()) show()
+        })
+        customElements.whenDefined('edtf-input').then(show)
+      }
+    </script>
+  </body>
+</html>

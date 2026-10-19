@@ -5,7 +5,7 @@ A date input that stores [EDTF](https://www.loc.gov/standards/datetime/) (ISO 86
 | Package                                    | What it is                                                 | Status      |
 | ------------------------------------------ | ---------------------------------------------------------- | ----------- |
 | [`edtf-input-core`](packages/core)         | Model, generator, natural-language parser, bounds. No DOM. | In progress |
-| [`edtf-input`](packages/element)           | The `<edtf-input>` Web Component                           | Planned     |
+| [`edtf-input`](packages/element)           | The `<edtf-input>` Web Component                           | In progress |
 | [`edtf-input-react`](packages/react)       | React wrapper                                              | Planned     |
 | [`edtf-input-stimulus`](packages/stimulus) | Stimulus controller (progressive enhancement)              | Planned     |
 

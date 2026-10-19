@@ -1,8 +1,29 @@
 {
   "name": "edtf-input",
   "version": "0.0.0",
-  "private": true,
-  "description": "The <edtf-input> Web Component. Phase 2.",
+  "description": "<edtf-input>: a date input that stores EDTF (ISO 8601-2) values, with a guided UI for the public",
   "license": "BSD-3-Clause",
-  "type": "module"
+  "type": "module",
+  "sideEffects": [
+    "./dist/index.js",
+    "./dist/edtf-input.standalone.js"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./standalone": "./dist/edtf-input.standalone.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "edtf-input-core": "workspace:*"
+  }
 }

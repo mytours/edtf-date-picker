@@ -242,3 +242,32 @@ Found while building the core; the code and tests are the reference.
 - `en` formats dates US-style ("March 12, 1982"); en-NZ, en-GB and en-AU users need day-first wording.
 - `196X` reads as "1960s (year unknown)", so decade-to-decade periods become "1960s (year unknown) to 1980s (year unknown)".
 - `/1931` reads as "unknown date to 1931".
+
+## Phase 2: the `<edtf-input>` element
+
+Scope: the event guided UI, per-part certainty, the timeline, form association and `edtf-change`. With `semantics="period"`, phase 2 shows only the "type it" box (core already parses periods); the start and end panels are phase 3.
+
+### Structure
+
+| Module        | Does                                                                                                                                                                       |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `element.ts`  | `EdtfInputElement`: shadow DOM, attributes, form association, events. Builds its DOM once and updates it in place; no framework.                                           |
+| `controls.ts` | Pure mapping between the guided controls' values (`Controls`) and core `State`, both ways, so `fromValue()` and "Adjust this using the options above" fill the controls.   |
+| `timeline.ts` | Pure `timeline(result)`: an axis and marks in percentages, or null when there's nothing to place or the span is over 5,000 years. The element only turns it into elements. |
+| `styles.ts`   | Shadow CSS. Themed with `--edtf-*` custom properties and `::part()`; light and dark via `prefers-color-scheme`.                                                            |
+
+### Element API
+
+- Attributes: `name`, `label`, `hint`, `value`, `semantics`, `min`, `max`, `warn-before`, `warn-message`, `max-level`, `locale`, `required`, `disabled`, `earliest-name`, `latest-name`. Properties for what attributes can't carry: `terms` and `warn` (an array of rules).
+- `value` (EDTF string), `result` (the last core `Result`) and `validity` / `validationMessage` / `checkValidity()` / `reportValidity()` via `ElementInternals`.
+- Events: `edtf-change` (bubbles, composed) with the `Result` plus `valid`; a plain `change` too, for frameworks that listen for it.
+
+### Form association
+
+- `setFormValue` gets a `FormData` when `earliest-name` / `latest-name` are set, so one element submits three fields with no hidden inputs. Otherwise it's just the value.
+- Validity: an `invalid` result sets `customError` with the message. `incomplete` does too, once the person has started an answer, so a half-entered date can't be submitted by accident. Nothing chosen and `required` gives `valueMissing`.
+- `formResetCallback` restores the `value` attribute, `formStateRestoreCallback` restores the value, and `formDisabledCallback` disables the controls.
+
+### Testing
+
+The element's tests run in real Chromium (Vitest browser mode with Playwright), because happy-dom and jsdom don't implement `ElementInternals`. Core's tests stay in Node.

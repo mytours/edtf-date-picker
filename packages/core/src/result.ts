@@ -4,6 +4,7 @@ import type { Config, Level } from './config.js'
 import { compareIso } from './dates.js'
 import { captionOf, labelOf } from './label.js'
 import { message, type Message } from './messages.js'
+import { qualifiersOf, shapeOf, type EndQualifiers, type Shape } from './shape.js'
 
 export type Status = 'valid' | 'incomplete' | 'invalid'
 
@@ -18,6 +19,10 @@ export interface Result {
   readonly latest: string | null
   readonly start: EndKind | null
   readonly end: EndKind | null
+  /** What to draw: null when there is nothing to place */
+  readonly shape: Shape | null
+  /** Approximate or uncertain at each end */
+  readonly qualifiers: EndQualifiers | null
   readonly warnings: readonly Message[]
   /** Things the parser assumed, like the order of a slash date */
   readonly notes: readonly Message[]
@@ -33,6 +38,8 @@ const EMPTY = {
   latest: null,
   start: null,
   end: null,
+  shape: null,
+  qualifiers: null,
   warnings: [],
   notes: [],
 } as const
@@ -111,6 +118,8 @@ export function finish(
     latest: b.latest,
     start: b.start,
     end: b.end,
+    shape: shapeOf(tree, b),
+    qualifiers: qualifiersOf(tree),
     warnings: all,
     notes: [],
     error: null,
