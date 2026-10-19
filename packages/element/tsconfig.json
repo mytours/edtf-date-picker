@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": [],
+    // Type-check against core's source, not its last build
+    "paths": { "edtf-input-core": ["../core/src/index.ts"] }
+  },
+  "include": ["src", "test", "*.config.ts", "../core/src/edtf.d.ts"]
+}

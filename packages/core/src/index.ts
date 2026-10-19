@@ -28,5 +28,5 @@ export {
 } from './model.js'
 export { parsePeriodText, parseText, type TextResult } from './parse/index.js'
 export { fromValue } from './from-value.js'
-export type { Result, Status } from './result.js'
+export { incomplete, invalid, type Result, type Status } from './result.js'
 export type { EndQualifiers, Qualifiers, Shape } from './shape.js'
