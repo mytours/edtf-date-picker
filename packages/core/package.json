@@ -1,0 +1,26 @@
+{
+  "name": "edtf-input-core",
+  "version": "0.0.0",
+  "description": "Model, generator, natural-language parser and bounds for EDTF date inputs. No DOM.",
+  "license": "BSD-3-Clause",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "edtf": "4.11.1",
+    "edtf-humanize": "0.1.0"
+  }
+}

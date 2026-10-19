@@ -1,0 +1,674 @@
+[
+  {
+    "id": "event-year",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1965"
+    },
+    "edtf": "1965",
+    "level": 0,
+    "earliest": "1965-01-01",
+    "latest": "1965-12-31",
+    "label": {
+      "en": "1965"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-approx-about",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "about 1965"
+    },
+    "edtf": "1965~",
+    "level": 1,
+    "earliest": "1965-01-01",
+    "latest": "1965-12-31",
+    "label": {
+      "en": "circa 1965"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-approx-circa-abbrev",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "c. 1900"
+    },
+    "edtf": "1900~",
+    "level": 1,
+    "earliest": "1900-01-01",
+    "latest": "1900-12-31",
+    "label": {
+      "en": "circa 1900"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-approx-ish",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1965-ish"
+    },
+    "edtf": "1965~",
+    "level": 1,
+    "earliest": "1965-01-01",
+    "latest": "1965-12-31",
+    "label": {
+      "en": "circa 1965"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-uncertain-question",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1965?"
+    },
+    "edtf": "1965?",
+    "level": 1,
+    "earliest": "1965-01-01",
+    "latest": "1965-12-31",
+    "label": {
+      "en": "1965?"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-uncertain-maybe",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "maybe 1965"
+    },
+    "edtf": "1965?",
+    "level": 1,
+    "earliest": "1965-01-01",
+    "latest": "1965-12-31",
+    "label": {
+      "en": "1965?"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-approx-and-uncertain",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "about 1965?"
+    },
+    "edtf": "1965%",
+    "level": 1,
+    "earliest": "1965-01-01",
+    "latest": "1965-12-31",
+    "label": {
+      "en": "circa 1965?"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-season",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "summer 1975"
+    },
+    "edtf": "1975-22",
+    "level": 1,
+    "earliest": "1975-06-01",
+    "latest": "1975-08-31",
+    "label": {
+      "en": "summer 1975"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-month-uncertain",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "June 1982?"
+    },
+    "edtf": "1982-06?",
+    "level": 1,
+    "earliest": "1982-06-01",
+    "latest": "1982-06-30",
+    "label": {
+      "en": "June 1982?"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-month-year",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "March 1982"
+    },
+    "edtf": "1982-03",
+    "level": 0,
+    "earliest": "1982-03-01",
+    "latest": "1982-03-31",
+    "label": {
+      "en": "March 1982"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-day-month-year",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "12 March 1982"
+    },
+    "edtf": "1982-03-12",
+    "level": 0,
+    "earliest": "1982-03-12",
+    "latest": "1982-03-12",
+    "label": {
+      "en": "March 12, 1982"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-month-day-year",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "March 12, 1982"
+    },
+    "edtf": "1982-03-12",
+    "level": 0,
+    "earliest": "1982-03-12",
+    "latest": "1982-03-12",
+    "label": {
+      "en": "March 12, 1982"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-iso-day",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1982-03-12"
+    },
+    "edtf": "1982-03-12",
+    "level": 0,
+    "earliest": "1982-03-12",
+    "latest": "1982-03-12",
+    "label": {
+      "en": "March 12, 1982"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-slash-dmy",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "3/4/1975"
+    },
+    "edtf": "1975-04-03",
+    "level": 0,
+    "earliest": "1975-04-03",
+    "latest": "1975-04-03",
+    "label": {
+      "en": "April 3, 1975"
+    },
+    "notes": ["slash-order-assumed"]
+  },
+  {
+    "id": "event-slash-mdy",
+    "semantics": "event",
+    "locale": "en-US",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "3/4/1975"
+    },
+    "edtf": "1975-03-04",
+    "level": 0,
+    "earliest": "1975-03-04",
+    "latest": "1975-03-04",
+    "label": {
+      "en": "March 4, 1975"
+    },
+    "notes": ["slash-order-assumed"]
+  },
+  {
+    "id": "event-slash-unambiguous",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "25/12/1975"
+    },
+    "edtf": "1975-12-25",
+    "level": 0,
+    "earliest": "1975-12-25",
+    "latest": "1975-12-25",
+    "label": {
+      "en": "December 25, 1975"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-decade",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1960s"
+    },
+    "edtf": "196X",
+    "level": 1,
+    "earliest": "1960-01-01",
+    "latest": "1969-12-31",
+    "label": {
+      "en": "1960s (year unknown)"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-decade-two-digit",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "'60s"
+    },
+    "edtf": "196X",
+    "level": 1,
+    "earliest": "1960-01-01",
+    "latest": "1969-12-31",
+    "label": {
+      "en": "1960s (year unknown)"
+    },
+    "notes": ["two-digit-decade"]
+  },
+  {
+    "id": "event-decade-two-digit-recent",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "20s"
+    },
+    "edtf": "202X",
+    "level": 1,
+    "earliest": "2020-01-01",
+    "latest": "2029-12-31",
+    "label": {
+      "en": "2020s (year unknown)"
+    },
+    "notes": ["two-digit-decade"]
+  },
+  {
+    "id": "event-decade-early",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "early 1960s"
+    },
+    "edtf": "[1960..1963]",
+    "level": 2,
+    "earliest": "1960-01-01",
+    "latest": "1963-12-31",
+    "label": {
+      "en": "1960 to 1963"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-decade-mid",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "mid-60s"
+    },
+    "edtf": "[1964..1966]",
+    "level": 2,
+    "earliest": "1964-01-01",
+    "latest": "1966-12-31",
+    "label": {
+      "en": "1964 to 1966"
+    },
+    "notes": ["two-digit-decade"]
+  },
+  {
+    "id": "event-decade-late",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "late 1940s"
+    },
+    "edtf": "[1947..1949]",
+    "level": 2,
+    "earliest": "1947-01-01",
+    "latest": "1949-12-31",
+    "label": {
+      "en": "1947 to 1949"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-between",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "between 1950 and 1960"
+    },
+    "edtf": "[1950..1960]",
+    "level": 2,
+    "earliest": "1950-01-01",
+    "latest": "1960-12-31",
+    "label": {
+      "en": "1950 to 1960"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-between-hyphen",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1950-1960"
+    },
+    "edtf": "[1950..1960]",
+    "level": 2,
+    "earliest": "1950-01-01",
+    "latest": "1960-12-31",
+    "label": {
+      "en": "1950 to 1960"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-between-mixed-precision",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "June 1975 to 1980"
+    },
+    "edtf": "[1975-06..1980-12]",
+    "level": 2,
+    "earliest": "1975-06-01",
+    "latest": "1980-12-31",
+    "label": {
+      "en": "June 1975 to December 1980"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-between-decades",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1960s to 1980s"
+    },
+    "edtf": "[1960..1989]",
+    "level": 2,
+    "earliest": "1960-01-01",
+    "latest": "1989-12-31",
+    "label": {
+      "en": "1960 to 1989"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-before",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "before 1931"
+    },
+    "edtf": "[..1931]",
+    "level": 2,
+    "earliest": null,
+    "latest": "1931-12-31",
+    "label": {
+      "en": "on or before 1931"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-after",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "after 1950"
+    },
+    "edtf": "[1950..]",
+    "level": 2,
+    "earliest": "1950-01-01",
+    "latest": null,
+    "label": {
+      "en": "on or after 1950"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-since",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "since 1950"
+    },
+    "edtf": "[1950..]",
+    "level": 2,
+    "earliest": "1950-01-01",
+    "latest": null,
+    "label": {
+      "en": "on or after 1950"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-onwards",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "from 1975 onwards"
+    },
+    "edtf": "[1975..]",
+    "level": 2,
+    "earliest": "1975-01-01",
+    "latest": null,
+    "label": {
+      "en": "on or after 1975"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-before-approx",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "before about 1931"
+    },
+    "edtf": "[..~1931]",
+    "level": 2,
+    "earliest": null,
+    "latest": "1931-12-31",
+    "label": {
+      "en": "on or before circa 1931"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-unknown",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "don't know"
+    },
+    "edtf": "XXXX",
+    "level": 1,
+    "earliest": null,
+    "latest": null,
+    "label": {
+      "en": "unknown"
+    },
+    "notes": []
+  },
+  {
+    "id": "event-photo-future",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {
+      "max": "today"
+    },
+    "input": {
+      "text": "2030"
+    },
+    "error": "after-max"
+  },
+  {
+    "id": "event-photo-early-warning",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {
+      "max": "today",
+      "warn": [
+        {
+          "before": 1826,
+          "message": "That’s earlier than the oldest known photograph (1826). Is the year right?"
+        }
+      ]
+    },
+    "input": {
+      "text": "1820"
+    },
+    "edtf": "1820",
+    "level": 0,
+    "earliest": "1820-01-01",
+    "latest": "1820-12-31",
+    "label": {
+      "en": "1820"
+    },
+    "notes": ["config-warning"]
+  },
+  {
+    "id": "event-upcoming-past",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {
+      "min": "today"
+    },
+    "input": {
+      "text": "2020"
+    },
+    "error": "before-min"
+  },
+  {
+    "id": "event-error-not-understood",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "the day after the war"
+    },
+    "error": "not-understood"
+  },
+  {
+    "id": "event-error-decade",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1965s"
+    },
+    "error": "decade-not-zero"
+  },
+  {
+    "id": "event-error-slash-order",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "12/25/1975"
+    },
+    "error": "slash-order-mismatch"
+  },
+  {
+    "id": "event-error-impossible-day",
+    "semantics": "event",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "29 February 1975"
+    },
+    "error": "impossible-day"
+  }
+]

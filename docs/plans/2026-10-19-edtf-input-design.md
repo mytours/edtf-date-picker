@@ -6,15 +6,15 @@ This document settles the repo layout, tooling and the design of phase 1 (`edtf-
 
 ## Decisions
 
-| Topic | Decision |
-| --- | --- |
-| Layout | pnpm monorepo, one package per deliverable |
-| Language / build | TypeScript, tsup, ESM only, `.d.ts` emitted |
-| Dependencies | `edtf` and `edtf-humanize` stay external; `edtf-input` also ships a standalone bundle |
-| Labels | `edtf-humanize` (npm, `mytours/edtf-humanize-js`) from phase 1; no throwaway label code |
-| Tooling | Same as edtf-humanize-js: pnpm 10, TS 6, tsup, vitest 5, eslint 10, prettier |
-| Releases | changesets, independent versions starting at 0.1.0; release workflow deferred to phase 2 |
-| Licence | BSD-3-Clause |
+| Topic            | Decision                                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------------- |
+| Layout           | pnpm monorepo, one package per deliverable                                               |
+| Language / build | TypeScript, tsup, ESM only, `.d.ts` emitted                                              |
+| Dependencies     | `edtf` and `edtf-humanize` stay external; `edtf-input` also ships a standalone bundle    |
+| Labels           | `edtf-humanize` (npm, `mytours/edtf-humanize-js`) from phase 1; no throwaway label code  |
+| Tooling          | Same as edtf-humanize-js: pnpm 10, TS 6, tsup, vitest 5, eslint 10, prettier             |
+| Releases         | changesets, independent versions starting at 0.1.0; release workflow deferred to phase 2 |
+| Licence          | BSD-3-Clause                                                                             |
 
 ## 1. Repo and tooling
 
@@ -44,14 +44,14 @@ edtf-date-picker/
 
 No DOM. Pure functions over a resolved config.
 
-| Module | API |
-| --- | --- |
-| `config.ts` | `resolveConfig(attrs \| object) → Config`: `semantics`, `min`, `max` (years, or `'today'` resolved against an injectable clock), `warn: [{ before \| after, message }]`, `maxLevel`, `locale`, `terms` |
-| `model.ts` | State types (below) |
-| `generate.ts` | `generate(state, config) → Result` |
-| `parse/` | `parseText(text, config)` and `parsePeriodText(text, config)` → state + notes, or an error |
-| `bounds.ts` | `bounds(edtf) → { earliest, latest, openStart, openEnd }` |
-| `analyse.ts` | `analyse(edtf, config) → Result`, for advanced mode and pre-existing values |
+| Module        | API                                                                                                                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `config.ts`   | `resolveConfig(attrs \| object) → Config`: `semantics`, `min`, `max` (years, or `'today'` resolved against an injectable clock), `warn: [{ before \| after, message }]`, `maxLevel`, `locale`, `terms` |
+| `model.ts`    | State types (below)                                                                                                                                                                                    |
+| `generate.ts` | `generate(state, config) → Result`                                                                                                                                                                     |
+| `parse/`      | `parseText(text, config)` and `parsePeriodText(text, config)` → state + notes, or an error                                                                                                             |
+| `bounds.ts`   | `bounds(edtf) → { earliest, latest, openStart, openEnd }`                                                                                                                                              |
+| `analyse.ts`  | `analyse(edtf, config) → Result`, for advanced mode and pre-existing values                                                                                                                            |
 
 ### State
 
@@ -116,12 +116,12 @@ The `edtf-change` event detail is a superset of `Result`. Messages carry a code 
 
 Computed from the `parse()` tree, not `edtf().min/max`, which is wrong for several types (checked against edtf.js 4.11.1):
 
-| Input | edtf.js says | Problem |
-| --- | --- | --- |
-| `[1667..1672]` | max = end of 1667 | sets take the first member's max |
-| `[1890-01-01..2020-12-25]` | max = 1890-01-01 | same |
-| `Y170000002` | min/max = NaN | long years unsupported |
-| `2001-25`, `2001-33` | identical ranges | hemisphere seasons not distinguished from quarters |
+| Input                      | edtf.js says      | Problem                                            |
+| -------------------------- | ----------------- | -------------------------------------------------- |
+| `[1667..1672]`             | max = end of 1667 | sets take the first member's max                   |
+| `[1890-01-01..2020-12-25]` | max = 1890-01-01  | same                                               |
+| `Y170000002`               | min/max = NaN     | long years unsupported                             |
+| `2001-25`, `2001-33`       | identical ranges  | hemisphere seasons not distinguished from quarters |
 
 Rules:
 
@@ -134,16 +134,16 @@ Rules:
 ### Labels
 
 - `label = humanize(value, { locale })`, where the locale object has `config.terms` merged in (`{ ...en, terms: { ...en.terms, ...overrides } }`). This gives the public vs catalogue wording split with no new humanize API.
-- `caption` describes the *shape* ("one moment somewhere in this range", "a span with an unknown end") and is owned by core: a small lookup keyed by shape.
+- `caption` describes the _shape_ ("one moment somewhere in this range", "a span with an unknown end") and is owned by core: a small lookup keyed by shape.
 
 ### Upstream work in edtf-humanize-js
 
 Separate PRs, not blocking phase 1. Gaps found by probing 0.1.0:
 
-| Input | Current output | Wanted |
-| --- | --- | --- |
-| `1982-?03-~12` | circa March 12, 1982? | per-part wording |
-| `-0500` | -0500 | 501 BCE |
+| Input          | Current output                       | Wanted                                  |
+| -------------- | ------------------------------------ | --------------------------------------- |
+| `1982-?03-~12` | circa March 12, 1982?                | per-part wording                        |
+| `-0500`        | -0500                                | 501 BCE                                 |
 | `[1667..1672]` | 1667, 1668, 1669, 1670, 1671 or 1672 | one of 1667 to 1672 (for larger ranges) |
 
 Core's tests pin the current humanize output, so each upstream fix shows up here as a deliberate fixture change.
@@ -222,3 +222,23 @@ From probing edtf.js 4.11.1 (not yet checked against the ISO 8601-2 text):
 
 - Rejected: qualifier next to `X` (`1982-?03-XX`, `XXXX-?03`), qualified seasons (`2001-21~`, `2001-~21`), trailing qualifier on one interval end with a prefix qualifier on the other (`1890~/1905-05-?03`), unequal precision in set ranges (`[1890..2020-12-25]`).
 - Error positions: syntax errors report `offset` and the offending token, which is enough for the advanced-mode character highlight. Grammar-level failures (qualified seasons) report only "No possible parsings", so advanced mode needs a generic fallback message.
+
+## Changes made during phase 1
+
+Found while building the core; the code and tests are the reference.
+
+- `Certainty` has a fifth value, `both` (`%`), for "about 1965?".
+- More edtf.js rules turned up: a season needs a known year (`XXXX-21` is rejected); seasons can't be interval or set ends; two-ended set ranges reject qualifiers in every position, while open-ended sets accept prefix qualifiers only; and an interval's end must _begin_ strictly after its start begins (`1966/196X` and `1965-06/1965` parse, but building them throws). The generator uses a candidate chain (natural form, then prefix form, then unqualified with a warning) rather than hand-coding every set rule.
+- In the parse tree, interval and set members with `X` digits (`196X`) have no `type`, and an open interval end is `Infinity`, not `null`. `asLeaf()` in `bounds.ts` normalises both. Before that fix, `196X/198X` came out unbounded; the property test now compares the result's `start`/`end` with the state, which catches it.
+- Two-sided "between" collapses to a single date when both ends are the same.
+- edtf-humanize 0.1.0 lists every member of a set range. Core labels sets that contain ranges itself (each range in the locale's interval wording, joined with its set connectors) until that's fixed upstream.
+- In period mode, a lone decade gives `1920/1929` (story §3 and the prototype), not `196` (story §1). "until 1931" gives `/1931` (unknown start), as in the prototype.
+- `min`/`max` are inclusive ISO days, not years, so `max="today"` rejects 1 December this year.
+- `timeline` is left out of `Result` until phase 2, when the element draws it; `start`/`end` (`date`, `open`, `unknown`) carry what it needs.
+- Messages that the design gave as `{ code, params }` also carry English `text`.
+
+### More for edtf-humanize-js
+
+- `en` formats dates US-style ("March 12, 1982"); en-NZ, en-GB and en-AU users need day-first wording.
+- `196X` reads as "1960s (year unknown)", so decade-to-decade periods become "1960s (year unknown) to 1980s (year unknown)".
+- `/1931` reads as "unknown date to 1931".
