@@ -6,15 +6,15 @@ This document settles the repo layout, tooling and the design of phase 1 (`edtf-
 
 ## Decisions
 
-| Topic | Decision |
-| --- | --- |
-| Layout | pnpm monorepo, one package per deliverable |
-| Language / build | TypeScript, tsup, ESM only, `.d.ts` emitted |
-| Dependencies | `edtf` and `edtf-humanize` stay external; `edtf-input` also ships a standalone bundle |
-| Labels | `edtf-humanize` (npm, `mytours/edtf-humanize-js`) from phase 1; no throwaway label code |
-| Tooling | Same as edtf-humanize-js: pnpm 10, TS 6, tsup, vitest 5, eslint 10, prettier |
-| Releases | changesets, independent versions starting at 0.1.0; release workflow deferred to phase 2 |
-| Licence | BSD-3-Clause |
+| Topic            | Decision                                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------------- |
+| Layout           | pnpm monorepo, one package per deliverable                                               |
+| Language / build | TypeScript, tsup, ESM only, `.d.ts` emitted                                              |
+| Dependencies     | `edtf` and `edtf-humanize` stay external; `edtf-input` also ships a standalone bundle    |
+| Labels           | `edtf-humanize` (npm, `mytours/edtf-humanize-js`) from phase 1; no throwaway label code  |
+| Tooling          | Same as edtf-humanize-js: pnpm 10, TS 6, tsup, vitest 5, eslint 10, prettier             |
+| Releases         | changesets, independent versions starting at 0.1.0; release workflow deferred to phase 2 |
+| Licence          | BSD-3-Clause                                                                             |
 
 ## 1. Repo and tooling
 
@@ -44,14 +44,14 @@ edtf-date-picker/
 
 No DOM. Pure functions over a resolved config.
 
-| Module | API |
-| --- | --- |
-| `config.ts` | `resolveConfig(attrs \| object) → Config`: `semantics`, `min`, `max` (years, or `'today'` resolved against an injectable clock), `warn: [{ before \| after, message }]`, `maxLevel`, `locale`, `terms` |
-| `model.ts` | State types (below) |
-| `generate.ts` | `generate(state, config) → Result` |
-| `parse/` | `parseText(text, config)` and `parsePeriodText(text, config)` → state + notes, or an error |
-| `bounds.ts` | `bounds(edtf) → { earliest, latest, openStart, openEnd }` |
-| `analyse.ts` | `analyse(edtf, config) → Result`, for advanced mode and pre-existing values |
+| Module        | API                                                                                                                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `config.ts`   | `resolveConfig(attrs \| object) → Config`: `semantics`, `min`, `max` (years, or `'today'` resolved against an injectable clock), `warn: [{ before \| after, message }]`, `maxLevel`, `locale`, `terms` |
+| `model.ts`    | State types (below)                                                                                                                                                                                    |
+| `generate.ts` | `generate(state, config) → Result`                                                                                                                                                                     |
+| `parse/`      | `parseText(text, config)` and `parsePeriodText(text, config)` → state + notes, or an error                                                                                                             |
+| `bounds.ts`   | `bounds(edtf) → { earliest, latest, openStart, openEnd }`                                                                                                                                              |
+| `analyse.ts`  | `analyse(edtf, config) → Result`, for advanced mode and pre-existing values                                                                                                                            |
 
 ### State
 
@@ -116,12 +116,12 @@ The `edtf-change` event detail is a superset of `Result`. Messages carry a code 
 
 Computed from the `parse()` tree, not `edtf().min/max`, which is wrong for several types (checked against edtf.js 4.11.1):
 
-| Input | edtf.js says | Problem |
-| --- | --- | --- |
-| `[1667..1672]` | max = end of 1667 | sets take the first member's max |
-| `[1890-01-01..2020-12-25]` | max = 1890-01-01 | same |
-| `Y170000002` | min/max = NaN | long years unsupported |
-| `2001-25`, `2001-33` | identical ranges | hemisphere seasons not distinguished from quarters |
+| Input                      | edtf.js says      | Problem                                            |
+| -------------------------- | ----------------- | -------------------------------------------------- |
+| `[1667..1672]`             | max = end of 1667 | sets take the first member's max                   |
+| `[1890-01-01..2020-12-25]` | max = 1890-01-01  | same                                               |
+| `Y170000002`               | min/max = NaN     | long years unsupported                             |
+| `2001-25`, `2001-33`       | identical ranges  | hemisphere seasons not distinguished from quarters |
 
 Rules:
 
@@ -134,16 +134,16 @@ Rules:
 ### Labels
 
 - `label = humanize(value, { locale })`, where the locale object has `config.terms` merged in (`{ ...en, terms: { ...en.terms, ...overrides } }`). This gives the public vs catalogue wording split with no new humanize API.
-- `caption` describes the *shape* ("one moment somewhere in this range", "a span with an unknown end") and is owned by core: a small lookup keyed by shape.
+- `caption` describes the _shape_ ("one moment somewhere in this range", "a span with an unknown end") and is owned by core: a small lookup keyed by shape.
 
 ### Upstream work in edtf-humanize-js
 
 Separate PRs, not blocking phase 1. Gaps found by probing 0.1.0:
 
-| Input | Current output | Wanted |
-| --- | --- | --- |
-| `1982-?03-~12` | circa March 12, 1982? | per-part wording |
-| `-0500` | -0500 | 501 BCE |
+| Input          | Current output                       | Wanted                                  |
+| -------------- | ------------------------------------ | --------------------------------------- |
+| `1982-?03-~12` | circa March 12, 1982?                | per-part wording                        |
+| `-0500`        | -0500                                | 501 BCE                                 |
 | `[1667..1672]` | 1667, 1668, 1669, 1670, 1671 or 1672 | one of 1667 to 1672 (for larger ranges) |
 
 Core's tests pin the current humanize output, so each upstream fix shows up here as a deliberate fixture change.
