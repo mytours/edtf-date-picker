@@ -1,0 +1,8 @@
+{
+  "name": "edtf-input-stimulus",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Stimulus controller that upgrades an <input> to <edtf-input>. Phase 6.",
+  "license": "BSD-3-Clause",
+  "type": "module"
+}
