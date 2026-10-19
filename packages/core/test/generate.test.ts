@@ -272,6 +272,11 @@ describe('generate: result', () => {
       latest: '1965-12-31',
       start: 'date',
       end: 'date',
+      shape: 'moment',
+      qualifiers: {
+        start: { approximate: true, uncertain: false },
+        end: { approximate: true, uncertain: false },
+      },
       warnings: [],
       notes: [],
       error: null,
