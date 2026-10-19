@@ -1,0 +1,222 @@
+[
+  {
+    "id": "period-years",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1950 to 1962"
+    },
+    "edtf": "1950/1962",
+    "level": 0,
+    "earliest": "1950-01-01",
+    "latest": "1962-12-31",
+    "label": {
+      "en": "1950 to 1962"
+    },
+    "notes": []
+  },
+  {
+    "id": "period-approx-start",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "about 1890 to 1905"
+    },
+    "edtf": "1890~/1905",
+    "level": 1,
+    "earliest": "1890-01-01",
+    "latest": "1905-12-31",
+    "label": {
+      "en": "circa 1890 to 1905"
+    },
+    "notes": []
+  },
+  {
+    "id": "period-to-present",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "June 1975 to present"
+    },
+    "edtf": "1975-06/..",
+    "level": 1,
+    "earliest": "1975-06-01",
+    "latest": null,
+    "label": {
+      "en": "since June 1975"
+    },
+    "notes": []
+  },
+  {
+    "id": "period-decades",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1960s to 1980s"
+    },
+    "edtf": "196X/198X",
+    "level": 2,
+    "earliest": null,
+    "latest": null,
+    "label": {
+      "en": "1960s (year unknown) to 1980s (year unknown)"
+    },
+    "notes": []
+  },
+  {
+    "id": "period-until",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "until 1931"
+    },
+    "edtf": "/1931",
+    "level": 1,
+    "earliest": null,
+    "latest": "1931-12-31",
+    "label": {
+      "en": "unknown date to 1931"
+    },
+    "notes": []
+  },
+  {
+    "id": "period-since",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "since 2004"
+    },
+    "edtf": "2004/..",
+    "level": 1,
+    "earliest": "2004-01-01",
+    "latest": null,
+    "label": {
+      "en": "since 2004"
+    },
+    "notes": []
+  },
+  {
+    "id": "period-onwards",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "from 1975 onwards"
+    },
+    "edtf": "1975/..",
+    "level": 1,
+    "earliest": "1975-01-01",
+    "latest": null,
+    "label": {
+      "en": "since 1975"
+    },
+    "notes": []
+  },
+  {
+    "id": "period-decade",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "the 1920s"
+    },
+    "edtf": "1920/1929",
+    "level": 0,
+    "earliest": "1920-01-01",
+    "latest": "1929-12-31",
+    "label": {
+      "en": "1920 to 1929"
+    },
+    "notes": []
+  },
+  {
+    "id": "period-late-decade",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "the late 1920s"
+    },
+    "edtf": "1927/1929",
+    "level": 0,
+    "earliest": "1927-01-01",
+    "latest": "1929-12-31",
+    "label": {
+      "en": "1927 to 1929"
+    },
+    "notes": []
+  },
+  {
+    "id": "period-unknown-end",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1950 to unknown"
+    },
+    "edtf": "1950/",
+    "level": 1,
+    "earliest": "1950-01-01",
+    "latest": null,
+    "label": {
+      "en": "1950 to unknown date"
+    },
+    "notes": []
+  },
+  {
+    "id": "period-single-year",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1965"
+    },
+    "edtf": "1965",
+    "level": 0,
+    "earliest": "1965-01-01",
+    "latest": "1965-12-31",
+    "label": {
+      "en": "1965"
+    },
+    "notes": []
+  },
+  {
+    "id": "period-error-reversed",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "1960 to 1950"
+    },
+    "error": "end-before-start"
+  },
+  {
+    "id": "period-error-not-understood",
+    "semantics": "period",
+    "locale": "en-NZ",
+    "now": "2026-10-19",
+    "config": {},
+    "input": {
+      "text": "whenever"
+    },
+    "error": "not-understood"
+  }
+]

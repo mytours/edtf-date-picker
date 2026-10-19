@@ -1,0 +1,310 @@
+[
+  {
+    "id": "value-1982-03-12",
+    "input": {
+      "edtf": "1982-03-12"
+    },
+    "level": 0,
+    "earliest": "1982-03-12",
+    "latest": "1982-03-12",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "March 12, 1982"
+    }
+  },
+  {
+    "id": "value-1982-?03-~12",
+    "input": {
+      "edtf": "1982-?03-~12"
+    },
+    "level": 2,
+    "earliest": "1982-03-12",
+    "latest": "1982-03-12",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "circa March 12, 1982?"
+    }
+  },
+  {
+    "id": "value-189X",
+    "input": {
+      "edtf": "189X"
+    },
+    "level": 1,
+    "earliest": "1890-01-01",
+    "latest": "1899-12-31",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "1890s (year unknown)"
+    }
+  },
+  {
+    "id": "value-196",
+    "input": {
+      "edtf": "196"
+    },
+    "level": 2,
+    "earliest": "1960-01-01",
+    "latest": "1969-12-31",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "1960s"
+    }
+  },
+  {
+    "id": "value-19",
+    "input": {
+      "edtf": "19"
+    },
+    "level": 0,
+    "earliest": "1900-01-01",
+    "latest": "1999-12-31",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "20th century"
+    }
+  },
+  {
+    "id": "value-1950S2",
+    "input": {
+      "edtf": "1950S2"
+    },
+    "level": 2,
+    "earliest": "1900-01-01",
+    "latest": "1999-12-31",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "1950 (estimated, between 1900 and 1999)"
+    }
+  },
+  {
+    "id": "value--0500",
+    "input": {
+      "edtf": "-0500"
+    },
+    "level": 0,
+    "earliest": "-000500-01-01",
+    "latest": "-000500-12-31",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "-0500"
+    }
+  },
+  {
+    "id": "value-Y170000002",
+    "input": {
+      "edtf": "Y170000002"
+    },
+    "level": 1,
+    "earliest": "+170000002-01-01",
+    "latest": "+170000002-12-31",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "170000002"
+    }
+  },
+  {
+    "id": "value-2001-24",
+    "input": {
+      "edtf": "2001-24"
+    },
+    "level": 1,
+    "earliest": "2001-12-01",
+    "latest": "2002-02-28",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "winter 2001"
+    }
+  },
+  {
+    "id": "value-2001-33",
+    "input": {
+      "edtf": "2001-33"
+    },
+    "level": 2,
+    "earliest": "2001-01-01",
+    "latest": "2001-03-31",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "first quarter of 2001"
+    }
+  },
+  {
+    "id": "value-[1667..1672]",
+    "input": {
+      "edtf": "[1667..1672]"
+    },
+    "level": 2,
+    "earliest": "1667-01-01",
+    "latest": "1672-12-31",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "1667 to 1672"
+    }
+  },
+  {
+    "id": "value-[1890-01-01..2020-12-25]",
+    "input": {
+      "edtf": "[1890-01-01..2020-12-25]"
+    },
+    "level": 2,
+    "earliest": "1890-01-01",
+    "latest": "2020-12-25",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "January 1, 1890 to December 25, 2020"
+    }
+  },
+  {
+    "id": "value-[1667,1668,1670..1672]",
+    "input": {
+      "edtf": "[1667,1668,1670..1672]"
+    },
+    "level": 2,
+    "earliest": "1667-01-01",
+    "latest": "1672-12-31",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "1667, 1668 or 1670 to 1672"
+    }
+  },
+  {
+    "id": "value-{1960,1961-12}",
+    "input": {
+      "edtf": "{1960,1961-12}"
+    },
+    "level": 2,
+    "earliest": "1960-01-01",
+    "latest": "1961-12-31",
+    "start": "date",
+    "end": "date",
+    "label": {
+      "en": "1960 and December 1961"
+    }
+  },
+  {
+    "id": "value-[..1931]",
+    "input": {
+      "edtf": "[..1931]"
+    },
+    "level": 2,
+    "earliest": null,
+    "latest": "1931-12-31",
+    "start": "open",
+    "end": "date",
+    "label": {
+      "en": "on or before 1931"
+    }
+  },
+  {
+    "id": "value-[1950..]",
+    "input": {
+      "edtf": "[1950..]"
+    },
+    "level": 2,
+    "earliest": "1950-01-01",
+    "latest": null,
+    "start": "date",
+    "end": "open",
+    "label": {
+      "en": "on or after 1950"
+    }
+  },
+  {
+    "id": "value-1950/..",
+    "input": {
+      "edtf": "1950/.."
+    },
+    "level": 1,
+    "earliest": "1950-01-01",
+    "latest": null,
+    "start": "date",
+    "end": "open",
+    "label": {
+      "en": "since 1950"
+    }
+  },
+  {
+    "id": "value-1950/",
+    "input": {
+      "edtf": "1950/"
+    },
+    "level": 1,
+    "earliest": "1950-01-01",
+    "latest": null,
+    "start": "date",
+    "end": "unknown",
+    "label": {
+      "en": "1950 to unknown date"
+    }
+  },
+  {
+    "id": "value-../1950",
+    "input": {
+      "edtf": "../1950"
+    },
+    "level": 1,
+    "earliest": null,
+    "latest": "1950-12-31",
+    "start": "open",
+    "end": "date",
+    "label": {
+      "en": "until 1950"
+    }
+  },
+  {
+    "id": "value-/1950",
+    "input": {
+      "edtf": "/1950"
+    },
+    "level": 1,
+    "earliest": null,
+    "latest": "1950-12-31",
+    "start": "unknown",
+    "end": "date",
+    "label": {
+      "en": "unknown date to 1950"
+    }
+  },
+  {
+    "id": "value-XXXX",
+    "input": {
+      "edtf": "XXXX"
+    },
+    "level": 1,
+    "earliest": null,
+    "latest": null,
+    "start": "unknown",
+    "end": "unknown",
+    "label": {
+      "en": "unknown"
+    }
+  },
+  {
+    "id": "value-1982-?03-XX",
+    "input": {
+      "edtf": "1982-?03-XX"
+    },
+    "error": "invalid-edtf"
+  },
+  {
+    "id": "value-2001-21~",
+    "input": {
+      "edtf": "2001-21~"
+    },
+    "error": "invalid-edtf"
+  }
+]
