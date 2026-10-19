@@ -1,0 +1,1309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EDTF date input prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#eef1f5; --surface:#ffffff; --text:#141b26; --muted:#56606f; --line:#d6dce5;
+  --accent:#24539b; --accent-soft:#dfe7f3; --on-accent:#ffffff; --focus:#e08a00;
+  --track:#e3e8ef; --err:#b3261e; --ok:#1d6b3a; --err-soft:#fbe9e7; --info-soft:#e6edf8; --open-bg:#e9eff8;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f141c; --surface:#171e29; --text:#e8edf4; --muted:#9aa6b6; --line:#2b3544;
+    --accent:#8fb3ea; --accent-soft:#1f2c40; --on-accent:#0f141c; --focus:#ffb547;
+    --track:#253041; --err:#f2b8b5; --ok:#8fd3a6; --err-soft:#3a1f1e; --info-soft:#1b2433; --open-bg:#1a2333;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f141c; --surface:#171e29; --text:#e8edf4; --muted:#9aa6b6; --line:#2b3544;
+  --accent:#8fb3ea; --accent-soft:#1f2c40; --on-accent:#0f141c; --focus:#ffb547;
+  --track:#253041; --err:#f2b8b5; --ok:#8fd3a6; --err-soft:#3a1f1e; --info-soft:#1b2433; --open-bg:#1a2333;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:17px/1.5 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:640px;margin:0 auto;padding:28px 16px 64px}
+.note{color:var(--muted);font-size:15px;margin:0 0 10px}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{padding:0;width:100%}
+h1{font-size:28px;line-height:1.2;margin:0;padding:24px 20px 4px;font-weight:700;letter-spacing:-.01em}
+.lead{margin:0;padding:0 20px 18px;color:var(--muted)}
+.lead:empty{padding-bottom:14px}
+
+.opt{border-top:1px solid var(--line);position:relative}
+.opt::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:transparent;transition:background .15s}
+.opt.open::before{background:var(--accent)}
+.opt.open{background:var(--open-bg)}
+.opt[hidden]{display:none}
+.opt-head{display:flex;gap:14px;align-items:flex-start;padding:16px 20px;cursor:pointer}
+.opt-head input{width:20px;height:20px;margin:3px 0 0;accent-color:var(--accent);flex:none}
+.opt-head strong{display:block;font-weight:700}
+.opt-head small{display:block;color:var(--muted);font-size:15px}
+.opt-body{display:none;padding:0 20px 20px 54px}
+.opt.open .opt-body{display:block}
+@media (max-width:480px){ .opt-body{padding-left:20px} h1{font-size:24px} }
+
+.row{display:flex;flex-wrap:wrap;gap:12px}
+.field{display:flex;flex-direction:column;gap:4px;flex:1 1 140px}
+.field.narrow{flex:0 1 132px}
+.field > label{display:flex;flex-direction:column;gap:4px}
+.field > label > span{font-size:15px;color:var(--muted)}
+select.qsel{min-height:34px;width:100%;margin-top:6px;padding:4px 8px;font-size:14px;color:var(--muted);background:transparent;border:1px dashed var(--line);border-radius:6px}
+select.qsel.is-set{color:var(--accent);border:1px solid var(--accent);background:var(--surface);font-weight:700}
+input:disabled, select:disabled:not(.qsel){opacity:.4}
+.field > span, .sub{font-size:15px;color:var(--muted);margin:0}
+input[type=text], input:not([type]), select{
+  font:inherit;min-height:46px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface);color:var(--text);width:100%}
+input:focus-visible, select:focus-visible, button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sub{margin:16px 0 8px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.chip span{display:inline-block;padding:9px 16px;border:1px solid var(--line);border-radius:999px;background:var(--surface);cursor:pointer;font-size:16px}
+.chip input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.chip input:focus-visible + span{outline:3px solid var(--focus);outline-offset:2px}
+
+.cent{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.cent strong{font-size:17px}
+.pager{font:inherit;min-width:46px;min-height:42px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;font-size:20px;line-height:1}
+.pager:disabled{opacity:.35;cursor:not-allowed}
+.decades{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media (max-width:420px){ .decades{grid-template-columns:repeat(3,1fr)} }
+.decade, .eg, .link{font:inherit;cursor:pointer}
+.decade{min-height:46px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)}
+.decade[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.decade:disabled{opacity:.35;cursor:not-allowed}
+.small{font-size:14px;color:var(--muted);margin:10px 0 0}
+.egs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.eg{border:1px dashed var(--line);background:transparent;color:var(--text);border-radius:6px;padding:4px 10px;font-size:15px}
+.link{background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;font-size:15px;margin-top:12px}
+
+.result{border-top:1px solid var(--line);padding:20px 20px 24px}
+.result-kicker{margin:0;font-size:15px;color:var(--muted)}
+.result-text{margin:2px 0 4px;font-size:26px;line-height:1.25;font-weight:700}
+.result-text.muted{color:var(--muted);font-weight:400;font-size:20px}
+.result-caption{margin:0;color:var(--muted)}
+.msg{margin:12px 0 0;padding:10px 12px;border-radius:8px;background:var(--info-soft);font-size:15px}
+.msg.err{background:var(--err-soft);color:var(--err)}
+
+.tl{position:relative;height:66px;margin-top:16px}
+.tl-track{position:absolute;left:0;right:0;top:28px;height:6px;border-radius:3px;background:var(--track)}
+.tl-bar{position:absolute;top:22px;height:18px;border-radius:9px;background:var(--accent);transition:left .35s ease,width .35s ease}
+.tl-bar.point{width:18px;transform:translateX(-50%)}
+.tl-bar.approx:not(.point){-webkit-mask-image:linear-gradient(90deg,transparent,#000 35%,#000 65%,transparent);mask-image:linear-gradient(90deg,transparent,#000 35%,#000 65%,transparent)}
+.tl-bar.point.approx{width:54px;-webkit-mask-image:radial-gradient(closest-side,#000 30%,transparent);mask-image:radial-gradient(closest-side,#000 30%,transparent)}
+.tl-bar.uncertain{background:var(--surface);border:2px dashed var(--accent)}
+.tl-bar.range{background:repeating-linear-gradient(135deg,var(--accent) 0 3px,transparent 3px 8px);border:1.5px solid var(--accent)}
+.tl-bar.fade-start{border-left:0;border-radius:0 9px 9px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 30%);mask-image:linear-gradient(90deg,transparent,#000 30%)}
+.tl-bar.fade-end{border-right:0;border-radius:9px 0 0 9px;-webkit-mask-image:linear-gradient(90deg,#000 70%,transparent);mask-image:linear-gradient(90deg,#000 70%,transparent)}
+.tl-q{position:absolute;top:20px;width:22px;height:22px;border-radius:50%;border:2px dashed var(--accent);background:var(--surface);color:var(--accent);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;transform:translateX(-50%)}
+.tl-flag{position:absolute;top:0;transform:translateX(-50%);font-size:13px;color:var(--accent);white-space:nowrap;font-weight:700}
+.tl-axis{position:absolute;left:0;right:0;top:46px;height:20px;font-size:13px;color:var(--muted)}
+.tl-axis span{position:absolute;transform:translateX(-50%)}
+.tl-axis span::before{content:"";position:absolute;left:50%;top:-12px;width:1px;height:6px;background:var(--line)}
+@media (prefers-reduced-motion: reduce){ .tl-bar{transition:none} }
+
+.actions{padding:0 20px 24px}
+.btn{font:inherit;font-weight:700;min-height:48px;padding:10px 22px;border-radius:8px;border:0;background:var(--accent);color:var(--on-accent);cursor:pointer}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.secondary{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.done{padding:24px 20px}
+.done .btn{margin-top:16px}
+
+#periodUI{display:none}
+.is-period #periodUI{display:block}
+.is-period .opt{display:none}
+.pt{padding:0 20px 18px}
+.end{border-top:1px solid var(--line);padding:18px 20px 20px}
+.end h2{font-size:19px;margin:0 0 10px;font-weight:700}
+.end-fields{margin-top:14px}
+.end [hidden]{display:none}
+.tl-bar.fade-start.fade-end{-webkit-mask-image:linear-gradient(90deg,transparent,#000 25%,#000 75%,transparent);mask-image:linear-gradient(90deg,transparent,#000 25%,#000 75%,transparent)}
+.tl-bar.zone{background:repeating-linear-gradient(135deg,var(--accent) 0 3px,transparent 3px 8px);border:1.5px solid var(--accent)}
+.tl-bar.zone.uncertain{border-style:dashed}
+.adv{border-top:1px solid var(--line);padding:4px 20px 18px}
+.adv .link{margin-top:12px}
+.adv-body{margin-top:12px}
+.adv input{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.adv-status{margin:8px 0 0;font-size:15px}
+.adv-status.ok{color:var(--ok)}
+.adv-status.bad{color:var(--err)}
+.adv-status code{display:block;margin-top:6px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;white-space:pre;overflow-x:auto;color:var(--text)}
+.adv-status mark{background:var(--err-soft);color:var(--err);outline:1.5px solid var(--err);border-radius:2px}
+.tokens{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.tok{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:6px;padding:4px 9px;cursor:pointer}
+.tok code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700;margin-right:5px}
+.raw-active fieldset{opacity:.5}
+.dev{margin-top:20px;font-size:14px;color:var(--muted)}
+.dev summary{cursor:pointer}
+.dev dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:12px 0}
+.dev dt{font-weight:700}
+.dev dd{margin:0}
+.dev code,.dev pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.dev pre{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;color:var(--text);white-space:pre}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="note">One widget, different configurations. Pick a setup to see how the same component adapts:</p>
+  <div class="chips presets" role="radiogroup" aria-label="Configuration" id="presets"></div>
+
+  <form id="dateForm" class="panel" novalidate>
+    <fieldset>
+      <legend><h1 id="q">Date</h1></legend>
+      <p class="lead" id="hint"></p>
+      <div id="periodUI">
+        <div class="pt">
+          <label class="field"><span>Type it, or fill in the start and end below</span>
+            <input name="ptxt" placeholder="For example: about 1890 to 1905" autocomplete="off"></label>
+          <div class="egs" id="pegs" aria-label="Examples"></div>
+          <p class="small" id="ptxtMsg" aria-live="polite"></p>
+        </div>
+        <div class="end" id="endS"></div>
+        <div class="end" id="endE"></div>
+      </div>
+
+      <div class="opt" data-mode="exact">
+        <label class="opt-head"><input type="radio" name="mode" value="exact">
+          <span><strong>I know the exact date</strong><small>Day, month and year</small></span></label>
+        <div class="opt-body">
+          <div class="row parts" id="exRow"></div>
+          <p class="small">Not sure about a part? Use the small menu under it.</p>
+        </div>
+      </div>
+
+      <div class="opt" data-mode="month">
+        <label class="opt-head"><input type="radio" name="mode" value="month">
+          <span><strong>I know the year</strong><small>And maybe the month or season</small></span></label>
+        <div class="opt-body">
+          <div class="row parts" id="moRow"></div>
+        </div>
+      </div>
+
+      <div class="opt" data-mode="decade">
+        <label class="opt-head"><input type="radio" name="mode" value="decade">
+          <span><strong>I know roughly which decade</strong><small>Like “the 1960s” or “the late 70s”</small></span></label>
+        <div class="opt-body">
+          <input type="hidden" name="decade" value="">
+          <div class="cent">
+            <button type="button" class="pager" id="centPrev" aria-label="Previous century">‹</button>
+            <strong id="centLbl"></strong>
+            <button type="button" class="pager" id="centNext" aria-label="Next century">›</button>
+          </div>
+          <div class="decades" id="decades" role="group" aria-label="Decade"></div>
+          <p class="sub" id="partLbl">Can you narrow it down?</p>
+          <div class="chips" role="radiogroup" aria-labelledby="partLbl">
+            <label class="chip"><input type="radio" name="part" value="any" checked><span>Not really</span></label>
+            <label class="chip"><input type="radio" name="part" value="early"><span>Early</span></label>
+            <label class="chip"><input type="radio" name="part" value="mid"><span>Middle</span></label>
+            <label class="chip"><input type="radio" name="part" value="late"><span>Late</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="opt" data-mode="between">
+        <label class="opt-head"><input type="radio" name="mode" value="between">
+          <span><strong id="btTitle"></strong><small id="btSub"></small></span></label>
+        <div class="opt-body">
+          <div class="row">
+            <label class="field"><span id="btFromLbl"></span><input name="btFrom" inputmode="numeric" maxlength="4" placeholder="1950" autocomplete="off"></label>
+            <label class="field"><span id="btToLbl"></span><input name="btTo" inputmode="numeric" maxlength="4" placeholder="1960" autocomplete="off"></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="opt" data-mode="ba">
+        <label class="opt-head"><input type="radio" name="mode" value="ba">
+          <span><strong id="baTitle"></strong><small id="baSub"></small></span></label>
+        <div class="opt-body">
+          <div class="chips" role="radiogroup" aria-label="Which end" id="baDirs"></div>
+          <div class="row" style="margin-top:12px">
+            <label class="field narrow"><span>Year</span><input name="baYear" inputmode="numeric" maxlength="4" placeholder="1931" autocomplete="off"></label>
+          </div>
+          <div id="baOtherWrap">
+            <p class="sub" id="baOtherLbl"></p>
+            <div class="chips" role="radiogroup" aria-labelledby="baOtherLbl">
+              <label class="chip"><input type="radio" name="baOther" value="open" checked><span id="baOpenLbl"></span></label>
+              <label class="chip"><input type="radio" name="baOther" value="unknown"><span id="baUnknownLbl"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="opt" data-mode="text">
+        <label class="opt-head"><input type="radio" name="mode" value="text">
+          <span><strong>Let me type it</strong><small>In your own words</small></span></label>
+        <div class="opt-body">
+          <label class="field"><span class="visually-hidden">Date in your own words</span>
+            <input name="txt" placeholder="For example: about 1965" autocomplete="off"></label>
+          <div class="egs" id="egs" aria-label="Examples"></div>
+          <button type="button" class="link" id="tuneBtn" hidden>Adjust this using the options above</button>
+        </div>
+      </div>
+
+      <div class="opt" data-mode="unknown">
+        <label class="opt-head"><input type="radio" name="mode" value="unknown">
+          <span><strong>I don’t know</strong><small>That’s fine, you can leave it unknown</small></span></label>
+      </div>
+    </fieldset>
+
+    <section class="result" aria-live="polite">
+      <p class="result-kicker">We’ll record this as</p>
+      <p class="result-text muted" id="resultText">Choose an option above</p>
+      <p class="result-caption" id="resultCaption"></p>
+      <div class="tl" id="timeline" hidden aria-hidden="true">
+        <div class="tl-track"></div>
+        <div class="tl-bar" id="tlBar"></div>
+        <div class="tl-q" id="tlQ" hidden>?</div>
+        <div id="tlSegs"></div>
+        <div class="tl-flag" id="tlFlag"></div>
+        <div class="tl-axis" id="tlAxis"></div>
+      </div>
+      <p class="msg" id="resultMsg" hidden></p>
+    </section>
+    <section class="adv" id="adv" hidden>
+      <button type="button" class="link" id="advToggle" aria-expanded="false" aria-controls="advBody">Advanced: edit the EDTF directly</button>
+      <div class="adv-body" id="advBody" hidden>
+        <label class="field"><span>EDTF value</span>
+          <input name="advTxt" id="advTxt" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="[1667,1668,1670..1672]"></label>
+        <div class="adv-status" id="advStatus" aria-live="polite"></div>
+        <div class="tokens" id="tokens" aria-label="Insert a symbol"></div>
+        <p class="small">Try:</p>
+        <div class="egs" id="advEgs"></div>
+        <p class="small">Typing here replaces the answer above. Change anything above to switch back.</p>
+      </div>
+    </section>
+    <div class="actions"><button class="btn" id="nextBtn" type="submit" disabled>Save</button></div>
+  </form>
+
+  <section class="panel done" id="donePanel" hidden aria-live="polite">
+    <p class="result-kicker">Saved as</p>
+    <p class="result-text" id="doneText"></p>
+    <p class="result-caption">The host form would carry on from here.</p>
+    <button class="btn secondary" type="button" id="changeBtn">Change the date</button>
+  </section>
+
+  <details class="dev">
+    <summary>Developer view</summary>
+    <p>Equivalent element markup for this setup:</p>
+    <pre id="tMarkup"></pre>
+    <dl>
+      <dt>EDTF</dt><dd><code id="tEdtf">–</code></dd>
+      <dt>Earliest</dt><dd id="tEarliest">–</dd>
+      <dt>Latest</dt><dd id="tLatest">–</dd>
+      <dt>edtf.js check</dt><dd id="tCheck">–</dd>
+    </dl>
+    <p>Last <code>edtf-change</code> event detail:</p>
+    <pre id="tJson">null</pre>
+  </details>
+</main>
+
+<script>
+(() => {
+  const NOW = new Date().getFullYear();
+  const LOCALE = navigator.language || 'en';
+  const SEASONS = {21:'spring',22:'summer',23:'autumn',24:'winter'};
+  const SFX = {sure:'', around:'~', guess:'?', both:'%'};
+  const pad = n => String(n).padStart(2,'0');
+  const $ = id => document.getElementById(id);
+  const form = $('dateForm');
+  const F = form.elements;
+
+  const MONTHS = Array.from({length:12}, (_, i) =>
+    new Intl.DateTimeFormat(LOCALE, {month:'long'}).format(new Date(2000, i, 15)));
+  const EN_MONTHS = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+  const DATE_ORDER = (() => {
+    const parts = new Intl.DateTimeFormat(LOCALE).formatToParts(new Date(2000, 11, 31)).map(p => p.type);
+    return parts.indexOf('month') < parts.indexOf('day') ? 'mdy' : 'dmy';
+  })();
+  const fmtDay = (y,m,d) => new Intl.DateTimeFormat(LOCALE, {day:'numeric', month:'long', year:'numeric'}).format(new Date(y, m-1, d));
+  const fmtMonth = (y,m) => new Intl.DateTimeFormat(LOCALE, {month:'long', year:'numeric'}).format(new Date(y, m-1, 15));
+
+  // ---------- configurations ----------
+  // Everything use-case specific lives here, not in the widget.
+  const PRESETS = {
+    generic: {name:'Default', label:'Date', hint:'Give as much or as little as you know.',
+      semantics:'event', min:null, max:null, warn:null, advanced:true},
+    photo: {name:'Photo submission', label:'When was this photo taken?', hint:'Don’t worry if you’re not sure. A rough guess is still really useful.',
+      semantics:'event', min:null, max:'today',
+      warn:{before:1826, message:'That’s earlier than the oldest known photograph (1826). Is the year right?'}},
+    future: {name:'Upcoming event', label:'When is the festival?', hint:'Not confirmed yet? Give your best estimate.',
+      semantics:'event', min:'today', max:null, warn:null},
+    period: {name:'Period (start to end)', label:'When was the business operating?', hint:'Tell us when it started and ended, as far as you know.',
+      semantics:'period', min:null, max:null, warn:null, advanced:true},
+  };
+  let CFG;
+
+  const COPY = {
+    event: {
+      btTitle:'Somewhere between two years', btSub:'Like “not before 1950, not after 1960”', btFrom:'No earlier than', btTo:'No later than',
+      baTitle:'Only before or after a certain year', baSub:'Like “before 1931”', baDirs:[['before','Before'],['after','After']],
+    },
+    period: {
+      btTitle:'From one year to another', btSub:'Like “1950 to 1960”', btFrom:'From', btTo:'To',
+      baTitle:'I only know when it started or ended', baSub:'Like “from 1950 onwards”', baDirs:[['after','Started in'],['before','Ended in']],
+    },
+  };
+
+  // ---------- build static controls ----------
+  const QOPTS = `<option value="sure">✓ Sure</option><option value="around">≈ Roughly</option><option value="guess">? Not certain</option><option value="unknown">Don’t know</option>`;
+  function partFields(prefix, kinds, opts = {}){
+    return kinds.map(k => {
+      const name = prefix + k[0].toUpperCase() + k.slice(1);
+      const lbl = k === 'month' ? (opts.monthLabel || 'Month') : k === 'day' ? 'Day' : 'Year';
+      const ctl = k === 'year'
+        ? `<input name="${name}" inputmode="numeric" maxlength="4" placeholder="${opts.ph || 1965}" autocomplete="off">`
+        : `<select name="${name}"><option value="">${k === 'day' ? '–' : (opts.monthEmpty || 'Choose')}</option></select>`;
+      return `<div class="field${k === 'month' ? '' : ' narrow'}" data-part="${k}">
+        <label><span>${lbl}</span>${ctl}</label>
+        <select class="qsel" name="${name}Q" data-for="${name}" aria-label="How sure are you about the ${k}?">${QOPTS}</select>
+      </div>`;
+    }).join('');
+  }
+  function fillParts(root, prefix){
+    const day = root.querySelector(`[name=${prefix}Day]`), mon = root.querySelector(`[name=${prefix}Month]`);
+    if (day) for (let d = 1; d <= 31; d++) day.add(new Option(String(d), String(d)));
+    if (mon) {
+      const gm = document.createElement('optgroup'); gm.label = 'Month';
+      MONTHS.forEach((m,i) => gm.append(new Option(m, String(i+1))));
+      const gs = document.createElement('optgroup'); gs.label = 'Season';
+      Object.entries(SEASONS).forEach(([k,v]) => gs.append(new Option(v[0].toUpperCase()+v.slice(1), k)));
+      mon.append(gm, gs);
+    }
+    if (DATE_ORDER === 'mdy' && day && mon) day.closest('.row').insertBefore(mon.closest('.field'), day.closest('.field'));
+  }
+  $('exRow').innerHTML = partFields('ex', ['day','month','year']);
+  fillParts($('exRow'), 'ex');
+  $('moRow').innerHTML = partFields('mo', ['month','year'], {monthLabel:'Month or season (if you know it)', monthEmpty:'Just the year'});
+  fillParts($('moRow'), 'mo');
+
+  // ---------- period: start and end panels ----------
+  const SURE_CHIPS = p => `<label class="chip"><input type="radio" name="${p}Sure" value="sure" checked><span>I’m sure</span></label>
+    <label class="chip"><input type="radio" name="${p}Sure" value="around"><span>Around then</span></label>
+    <label class="chip"><input type="radio" name="${p}Sure" value="guess"><span>Not certain</span></label>`;
+  function buildEnd(el, p, title, openLabel, unknownNote, openNote){
+    const precs = [['exact','Exact date'],['month','Month and year'],['year','Year'],['decade','Decade'],['unknown','Not known'],['open',openLabel]];
+    el.innerHTML = `<h2 id="${p}H">${title}</h2>
+      <div class="chips" role="radiogroup" aria-labelledby="${p}H">
+        ${precs.map(([v,t]) => `<label class="chip"><input type="radio" name="${p}Prec" value="${v}"${v==='year'?' checked':''}><span>${t}</span></label>`).join('')}
+      </div>
+      <div class="end-fields">
+        <div class="row parts">${partFields(p, ['day','month','year'], {ph:1950})}</div>
+        <div class="field narrow" data-show="decade"><label><span>Decade</span><input name="${p}Decade" maxlength="6" placeholder="1960s" autocomplete="off"></label></div>
+        <p class="small" data-show="unknown">${unknownNote}</p>
+        <p class="small" data-show="open">${openNote}</p>
+      </div>`;
+    el.querySelector('[data-part=day]').dataset.show = 'exact';
+    el.querySelector('[data-part=month]').dataset.show = 'exact month';
+    el.querySelector('[data-part=year]').dataset.show = 'exact month year';
+    fillParts(el, p);
+  }
+  buildEnd($('endS'), 's', 'When did it start?', 'No set start', 'It did start, but when isn’t known.', 'Use this when there is no meaningful start date.');
+  buildEnd($('endE'), 'e', 'When did it end?', 'Still going', 'It has ended, but when isn’t known.', 'It hasn’t ended.');
+  function syncEnd(p){
+    const prec = F[p + 'Prec'].value;
+    $(p === 's' ? 'endS' : 'endE').querySelectorAll('[data-show]').forEach(x => { x.hidden = !x.dataset.show.split(' ').includes(prec); });
+  }
+  const readEnd = p => ({prec:F[p+'Prec'].value, d:F[p+'Day'].value, dq:F[p+'DayQ'].value, m:F[p+'Month'].value, mq:F[p+'MonthQ'].value,
+    y:F[p+'Year'].value, yq:F[p+'YearQ'].value, decade:F[p+'Decade'].value});
+  function writeEnd(p, e){
+    F[p+'Prec'].value = e.prec;
+    const qv = e.sure || 'sure';
+    F[p+'Day'].value = e.day ?? ''; F[p+'Month'].value = e.month ?? ''; F[p+'Year'].value = e.year ?? '';
+    if (e.decade != null) F[p+'Decade'].value = e.decade;
+    [p+'DayQ', p+'MonthQ', p+'YearQ'].forEach(n => { F[n].value = qv; });
+    syncEnd(p);
+  }
+  ['1950 to 1962','about 1890 to 1905','June 1975 to present','1960s to 1980s','until 1931','since 2004'].forEach(t => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'eg'; b.textContent = t;
+    b.addEventListener('click', () => { F.ptxt.value = t; onPeriodText(); F.ptxt.focus(); });
+    $('pegs').append(b);
+  });
+
+  // decade picker with century paging
+  let cent = Math.floor(NOW/100)*100;
+  const grid = $('decades');
+  const inBounds = (lo, hi) => (CFG.min == null || hi >= CFG.min) && (CFG.max == null || lo <= CFG.max);
+  function drawDecades(){
+    $('centLbl').textContent = `${cent}–${cent+99}`;
+    grid.textContent = '';
+    for (let d = cent; d < cent + 100; d += 10) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'decade'; b.textContent = `${d}s`; b.dataset.d = d;
+      b.disabled = !inBounds(d, d+9);
+      b.setAttribute('aria-pressed', String(String(d) === F.decade.value));
+      b.addEventListener('click', () => { F.decade.value = String(d); drawDecades(); render(); });
+      grid.append(b);
+    }
+    $('centPrev').disabled = cent - 100 < 1000 || !inBounds(cent-100, cent-1);
+    $('centNext').disabled = cent + 100 > 9900 || !inBounds(cent+100, cent+199);
+  }
+  $('centPrev').addEventListener('click', () => { cent -= 100; drawDecades(); });
+  $('centNext').addEventListener('click', () => { cent += 100; drawDecades(); });
+
+  // presets
+  Object.entries(PRESETS).forEach(([key, p], i) => {
+    const l = document.createElement('label'); l.className = 'chip';
+    l.innerHTML = `<input type="radio" name="preset" value="${key}"${i===0?' checked':''}><span></span>`;
+    l.querySelector('span').textContent = p.name;
+    l.querySelector('input').addEventListener('change', () => applyConfig(key));
+    $('presets').append(l);
+  });
+
+  function applyConfig(key){
+    const p = PRESETS[key];
+    CFG = {...p, key,
+      min: p.min === 'today' ? NOW : p.min, minToday: p.min === 'today',
+      max: p.max === 'today' ? NOW : p.max, maxToday: p.max === 'today'};
+    $('q').textContent = p.label;
+    $('hint').textContent = p.hint || '';
+    const c = COPY[CFG.semantics];
+    $('btTitle').textContent = c.btTitle; $('btSub').textContent = c.btSub;
+    $('btFromLbl').textContent = c.btFrom; $('btToLbl').textContent = c.btTo;
+    $('baTitle').textContent = c.baTitle; $('baSub').textContent = c.baSub;
+    const dirs = $('baDirs'); dirs.textContent = '';
+    c.baDirs.forEach(([v, t], i) => {
+      const l = document.createElement('label'); l.className = 'chip';
+      l.innerHTML = `<input type="radio" name="baDir" value="${v}"${i===0?' checked':''}><span></span>`;
+      l.querySelector('span').textContent = t;
+      dirs.append(l);
+    });
+    $('baOtherWrap').hidden = CFG.semantics !== 'period';
+    form.classList.toggle('is-period', CFG.semantics === 'period');
+    $('adv').hidden = !CFG.advanced;
+    rawActive = false;
+
+    const eg = $('egs'); eg.textContent = '';
+    const examples = CFG.semantics === 'period'
+      ? ['1950 to 1962','from 1975 onwards','until 1931','the 1920s','about 1890 to 1905']
+      : ['about 1965','summer 1975','late 1940s','June 1982?','between 1950 and 1960','before 1931'];
+    if (CFG.minToday) examples.splice(0, examples.length, `about ${NOW+1}`, `summer ${NOW+2}`, `late ${Math.floor(NOW/10)*10}s`, `after ${NOW+1}`);
+    examples.forEach(t => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'eg'; b.textContent = t;
+      b.addEventListener('click', () => { F.txt.value = t; render(); F.txt.focus(); });
+      eg.append(b);
+    });
+    // period with fuzzy ends needs per-end qualifiers; keep it to text for now
+    form.reset();
+    form.querySelector(`input[name=preset]`);
+    $('presets').querySelector(`input[value="${key}"]`).checked = true;
+    F.decade.value = '';
+    syncEnd('s'); syncEnd('e'); $('ptxtMsg').textContent = '';
+    const anchor = CFG.min != null && CFG.min > NOW ? CFG.min : CFG.max != null && CFG.max < NOW ? CFG.max : NOW;
+    cent = Math.floor(anchor/100)*100;
+    drawDecades();
+    $('donePanel').hidden = true; form.hidden = false;
+
+    const attrs = [`semantics="${CFG.semantics}"`];
+    if (p.min != null) attrs.push(`min="${p.min}"`);
+    if (p.max != null) attrs.push(`max="${p.max}"`);
+    if (p.warn) attrs.push(`warn-before="${p.warn.before}"`);
+    if (p.advanced) attrs.push('advanced');
+    $('tMarkup').textContent = `<edtf-input name="date"\n  label="${p.label}"\n  ${attrs.join('\n  ')}>\n</edtf-input>`;
+    render();
+  }
+
+  // ---------- natural-language parser (English, prototype scope) ----------
+  const monthIdx = w => {
+    if (!w || w.length < 3) return 0;
+    let i = EN_MONTHS.findIndex(m => m.startsWith(w.slice(0,3)));
+    if (i < 0) i = MONTHS.findIndex(m => m.toLowerCase().startsWith(w.slice(0,3)));
+    return i >= 0 ? i + 1 : 0;
+  };
+
+  function pickTwoDigitDecade(n){
+    const opts = [1900 + n, 2000 + n].filter(d => inBounds(d, d+9));
+    if (!opts.length) return {d:1900 + n};
+    const past = opts.filter(d => d <= NOW);
+    const d = past.length ? past[past.length - 1] : opts[0];
+    const other = opts.find(x => x !== d);
+    return {d, note: other ? `We read that as the ${d}s. Type “${other}s” if you meant that.` : null};
+  }
+
+  function parseText(raw){
+    let t = raw.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();
+    if (/^(unknown|no idea|not sure|no clue|i don'?t know|dont know|don'?t know|\?+)$/.test(t)) return {state:{mode:'unknown'}};
+    let sure = 'sure';
+    const unsure = /\b(maybe|probably|perhaps|possibly|i think|i guess)\b/g;
+    if (/\?\s*$/.test(t) || unsure.test(t)) {
+      sure = 'guess';
+      t = t.replace(/\?+\s*$/,'').replace(unsure,'').replace(/\s+/g,' ').trim();
+    }
+    const approx = /^(about|around|circa|approximately|approx\.?|roughly|ca\.?|c\.|c(?=\s?\d)|~)\s*/;
+    if (approx.test(t)) { if (sure === 'sure') sure = 'around'; t = t.replace(approx,'').trim(); }
+    if (/(-?ish|~)$/.test(t)) { if (sure === 'sure') sure = 'around'; t = t.replace(/(-?ish|~)$/,'').trim(); }
+    let m;
+    if ((m = t.match(/^(?:between |from )?(\d{4}) ?(?:-|–|—|to|and|until|till) ?(\d{4})$/))) return {state:{mode:'between', from:m[1], to:m[2]}};
+    if ((m = t.match(/^(?:before|pre|earlier than|prior to|until|till|up to|up until) ?(\d{4})$/))) return {state:{mode:'ba', dir:'before', year:m[1], other:'open'}};
+    if ((m = t.match(/^(?:after|since|post|later than|from) ?(\d{4})(?: ?(?:onwards|on|onward|\+))?$/)) ||
+        (m = t.match(/^(\d{4}) ?(?:onwards|onward|\+)$/))) return {state:{mode:'ba', dir:'after', year:m[1], other:'open'}};
+    if ((m = t.match(/^(?:the )?(?:(early|mid|late)[ -]?)?(?:the )?(\d{4}|'?\d{2})'?s$/))) {
+      let d = m[2].replace("'",''), note = null;
+      if (d.length === 2) { const r = pickTwoDigitDecade(+d); d = String(r.d); note = r.note; }
+      if (+d % 10) return {error:`A decade ends in 0, like the ${+d - (+d % 10)}s.`};
+      return {state:{mode:'decade', decade:d, part:m[1] || 'any'}, note};
+    }
+    if ((m = t.match(/^(spring|summer|autumn|fall|winter)(?: of)? (\d{4})$/))) {
+      const map = {spring:21, summer:22, autumn:23, fall:23, winter:24};
+      return {state:{mode:'month', month:String(map[m[1]]), year:m[2], sure}};
+    }
+    if ((m = t.match(/^(\d{1,2})(?:st|nd|rd|th)?(?: of)? ([a-z]+)\.?,? (\d{4})$/)) && monthIdx(m[2]))
+      return {state:{mode:'exact', day:String(+m[1]), month:String(monthIdx(m[2])), year:m[3], sure}};
+    if ((m = t.match(/^([a-z]+)\.? (\d{1,2})(?:st|nd|rd|th)?,? (\d{4})$/)) && monthIdx(m[1]))
+      return {state:{mode:'exact', day:String(+m[2]), month:String(monthIdx(m[1])), year:m[3], sure}};
+    if ((m = t.match(/^([a-z]+)\.?,?(?: of)? (\d{4})$/)) && monthIdx(m[1]))
+      return {state:{mode:'month', month:String(monthIdx(m[1])), year:m[2], sure}};
+    if ((m = t.match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/))) {
+      if (+m[2] < 1 || +m[2] > 12) return {error:'That month number doesn’t look right.'};
+      return m[3] ? {state:{mode:'exact', day:String(+m[3]), month:String(+m[2]), year:m[1], sure}}
+                  : {state:{mode:'month', month:String(+m[2]), year:m[1], sure}};
+    }
+    if ((m = t.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})$/))) {
+      let day = +m[1], mon = +m[2];
+      if (DATE_ORDER === 'mdy') [day, mon] = [mon, day];
+      if (mon < 1 || mon > 12) return {error:`We read dates ${DATE_ORDER === 'mdy' ? 'month first, like 12/25/1975' : 'day first, like 25/12/1975'}. That one doesn’t fit.`};
+      const note = (day <= 12 && day !== mon) ? `We read this ${DATE_ORDER === 'mdy' ? 'month' : 'day'} first: ${fmtDay(+m[3], mon, day)}.` : null;
+      return {state:{mode:'exact', day:String(day), month:String(mon), year:m[3], sure}, note};
+    }
+    if ((m = t.match(/^(\d{4})$/))) return {state:{mode:'month', month:'', year:m[1], sure}};
+    const sides = t.replace(/^(between|from) /, '').split(/ (?:to|and|until|till) | ?[–—] ?| - /);
+    if (sides.length === 2) {
+      const pa = parseText(sides[0]), pb = parseText(sides[1]);
+      if (!pa.error && !pb.error && pa.state.mode !== 'unknown' && pb.state.mode !== 'unknown')
+        return {state:{mode:'betweenAny', a:pa.state, b:pb.state}};
+    }
+    return {error:'We didn’t understand that. Try something like “about 1965”, “summer 1975” or “late 1940s”.'};
+  }
+
+  function stateToEnd(st){
+    if (!st) return {error:true};
+    if (st.mode === 'unknown') return {prec:'unknown'};
+    if (st.mode === 'exact') return {prec:'exact', day:st.day, month:st.month, year:st.year, sure:st.sure};
+    if (st.mode === 'month') return st.month ? {prec:'month', month:st.month, year:st.year, sure:st.sure} : {prec:'year', year:st.year, sure:st.sure};
+    if (st.mode === 'decade') return {prec:'decade', decade:`${st.decade}s`};
+    return {error:true};
+  }
+  function parseSide(part){
+    part = part.trim();
+    if (/^(present|now|today|date|the present( day)?|ongoing)$/.test(part)) return {prec:'open'};
+    if (/^(unknown|\?|not known)$/.test(part)) return {prec:'unknown'};
+    const p = parseText(part);
+    if (p.error) return {error:true};
+    return stateToEnd(p.state);
+  }
+  function parsePeriod(raw){
+    let t = raw.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();
+    if (!t) return null;
+    t = t.replace(/(\d{4})-(\d{4})/, '$1 to $2').replace(/^(from|between) /, '');
+    let m, start, end;
+    if ((m = t.match(/^(?:since|after) (.+)$/))) { start = parseSide(m[1]); end = {prec:'open'}; }
+    else if ((m = t.match(/^(.+?) ?(?:onwards|onward|\+)$/))) { start = parseSide(m[1]); end = {prec:'open'}; }
+    else if ((m = t.match(/^(?:until|till|up to|up until|before) (.+)$/))) { start = {prec:'unknown'}; end = parseSide(m[1]); }
+    else {
+      const parts = t.split(/ (?:to|until|till|and) | ?[–—] ?| - /);
+      if (parts.length === 2) { start = parseSide(parts[0]); end = parseSide(parts[1]); }
+      else if (parts.length === 1) {
+        const p = parseText(parts[0]);
+        if (p.error) return {error:p.error};
+        const st = p.state;
+        if (st.mode === 'decade') { const d = +st.decade; return {start:{prec:'year', year:String(d)}, end:{prec:'year', year:String(d+9)}}; }
+        const e = stateToEnd(st);
+        if (e.error) return {error:'Give a start and an end, like “1950 to 1962”.'};
+        return {start:e, end:{...e}};
+      }
+    }
+    if (!start || !end || start.error || end.error) return {error:'We didn’t understand that. Try something like “1950 to 1962” or “about 1890 to 1905”.'};
+    return {start, end};
+  }
+  function onPeriodText(){
+    const msg = $('ptxtMsg');
+    const r = parsePeriod(F.ptxt.value);
+    if (!r) { msg.textContent = ''; render(); return; }
+    if (r.error) { msg.textContent = r.error; render(); return; }
+    writeEnd('s', r.start); writeEnd('e', r.end);
+    msg.textContent = 'Filled in below. Check the start and end look right.';
+    render();
+  }
+
+  // ---------- model to EDTF + label ----------
+  const q = (base, sure) => sure === 'around' ? `around ${base}` : sure === 'guess' ? `${base} (not certain)` : sure === 'both' ? `around ${base} (not certain)` : base;
+  const done = r => (r.ok = true, r);
+
+  function checkYear(v){
+    v = String(v ?? '').trim();
+    if (!v) return {incomplete:true};
+    if (!/^\d{4}$/.test(v) || +v < 1) return {error:'Enter a four-digit year, like 1965.'};
+    const y = +v;
+    if (CFG.max != null && y > CFG.max) return {error: CFG.maxToday ? `${y} is in the future, and this date can’t be.` : `Choose a year no later than ${CFG.max}.`};
+    if (CFG.min != null && y < CFG.min) return {error: CFG.minToday ? `${y} has already passed, and this date needs to be from now on.` : `Choose a year no earlier than ${CFG.min}.`};
+    return {y, warn: CFG.warn && y < CFG.warn.before ? CFG.warn.message : null};
+  }
+
+  const QWORD = {around:'approximate', guess:'not certain', both:'approximate and not certain'};
+  const toParts = s => ({d: s.d ?? s.day, m: s.m ?? s.month, y: s.y ?? s.year,
+    dq: s.dq ?? s.sure ?? 'sure', mq: s.mq ?? s.sure ?? 'sure', yq: s.yq ?? s.sure ?? 'sure'});
+  // Each part (year, month, day) can be sure, approximate, uncertain or unknown.
+  function computeParts(p, prec){
+    const kinds = prec === 'day' ? ['year','month','day'] : prec === 'month' ? ['year','month'] : ['year'];
+    const val = {year:p.y, month:p.m, day:p.d}, qq = {year:p.yq || 'sure', month:p.mq || 'sure', day:p.dq || 'sure'};
+    let y = null, m = null, d = null, warn = null;
+    if (qq.year !== 'unknown') {
+      const yc = checkYear(val.year);
+      if (yc.error) return {error:yc.error};
+      if (yc.incomplete) return {incomplete:'the year'};
+      y = yc.y; warn = yc.warn;
+    }
+    if (kinds.includes('month') && qq.month !== 'unknown') {
+      if (!val.month) return {incomplete: prec === 'day' ? 'the month' : 'the month or season'};
+      m = +val.month;
+    }
+    if (kinds.includes('day') && qq.day !== 'unknown') {
+      if (!val.day) return {incomplete:'the day'};
+      d = +val.day;
+    }
+    if (m > 20 && kinds.includes('day')) return {error:'Pick a month rather than a season when you know the day.'};
+    if (y == null && m == null && d == null) return {allUnknown:true};
+    if (d != null && m != null) {
+      const dim = new Date(y ?? 2000, m, 0).getDate();
+      if (d > dim) return {error: y != null ? `${fmtMonth(y, m)} only had ${dim} days.` : `${MONTHS[m-1]} never has ${d} days.`};
+    }
+    const v = {year:y, month:m, day:d}, width = {year:4, month:2, day:2};
+    const season = m > 20;
+    const known = kinds.filter(k => v[k] != null);
+    let outKinds = kinds.slice(), qWarn = null;
+    if (known.some(k => qq[k] !== 'sure')) {
+      // EDTF can't put qualifiers next to unknown (X) parts or on seasons.
+      // Trailing unknown parts can simply be dropped; otherwise the marks have to go.
+      while (outKinds.length > 1 && v[outKinds[outKinds.length - 1]] == null) outKinds.pop();
+      if (outKinds.some(k => v[k] == null) || season) {
+        known.forEach(k => { qq[k] = 'sure'; });
+        outKinds = kinds.slice();
+        qWarn = season
+          ? 'EDTF can’t mark a season as rough or not certain, so it was saved without that mark.'
+          : 'EDTF can’t mark parts as rough or not certain when another part isn’t known, so it was saved without those marks.';
+      }
+    }
+    const qs = known.map(k => qq[k]);
+    const uniform = qs.every(x => x === qs[0]);
+    const comp = k => v[k] == null ? 'X'.repeat(width[k]) : String(v[k]).padStart(width[k], '0');
+    const edtfPrefix = outKinds.map(k => (v[k] != null ? SFX[qq[k]] : '') + comp(k)).join('-');
+    const edtf = (uniform && outKinds.every(k => v[k] != null)) ? outKinds.map(comp).join('-') + SFX[qs[0]] : edtfPrefix;
+    const componentQ = edtf === edtfPrefix && qs.some(x => x !== 'sure');
+    const notes = [];
+    let base;
+    if (y != null && m != null && d != null) base = fmtDay(y, m, d);
+    else if (y != null && m != null) base = season ? `${SEASONS[m]} ${y}` : fmtMonth(y, m);
+    else if (m != null && d != null) base = new Intl.DateTimeFormat(LOCALE, {day:'numeric', month:'long'}).format(new Date(2000, m-1, d));
+    else if (y != null && d != null) base = `day ${d} of an unknown month in ${y}`;
+    else if (y != null) base = String(y);
+    else if (m != null) base = season ? SEASONS[m] : MONTHS[m-1];
+    else base = `day ${d}`;
+    kinds.forEach(k => { if (v[k] == null && !(k === 'month' && y != null && d != null)) notes.push(`${k} not known`); });
+    if (uniform && qs[0] !== 'sure') base = q(base, qs[0]);
+    else if (!uniform) known.forEach(k => { if (qq[k] !== 'sure') notes.push(`${k === 'month' && season ? 'season' : k} ${QWORD[qq[k]]}`); });
+    const label = notes.length ? `${base} (${notes.join(', ')})` : base;
+    const sure = qs.includes('guess') ? 'guess' : qs.includes('around') ? 'around' : 'sure';
+
+    let lo = null, hi = null, isoLo = null, isoHi = null, unit = 'partial';
+    if (y != null) {
+      if (m == null || season) { lo = y; hi = y+1; isoLo = `${y}-01-01`; isoHi = `${y}-12-31`; unit = season ? 'season' : 'year'; }
+      else if (d == null) { const last = new Date(y, m, 0).getDate(); lo = y+(m-1)/12; hi = y+m/12; isoLo = `${y}-${pad(m)}-01`; isoHi = `${y}-${pad(m)}-${pad(last)}`; unit = 'month'; }
+      else { const iso = `${y}-${pad(m)}-${pad(d)}`, doy = (Date.UTC(y,m-1,d) - Date.UTC(y,0,1)) / 864e5; lo = y + doy/365.25; hi = lo + 1/365.25; isoLo = isoHi = iso; unit = 'day'; }
+    }
+    return {edtf, edtfPrefix, componentQ, label, y, lo, hi, isoLo, isoHi, sure, warn: qWarn || warn, unit, mixed: notes.length > 0 || known.length < kinds.length};
+  }
+
+  function computeEnd(e){
+    const sx = SFX[e.sure] || '';
+    switch (e.prec) {
+      case 'open': return {kind:'open', edtf:'..'};
+      case 'unknown': return {kind:'unknown', edtf:''};
+      case 'decade': {
+        const v = String(e.decade || '').trim();
+        if (!v) return {incomplete:'the decade'};
+        const m = v.match(/^(\d{3})0'?s?$/);
+        if (!m) return {error:'Enter a decade like 1960s.'};
+        const d = +(m[1] + '0');
+        if (!inBounds(d, d+9)) return {error:'That decade is outside the dates allowed here.'};
+        return {kind:'date', edtf:`${m[1]}X`, label:`the ${d}s`, lo:d, hi:d+10, isoLo:`${d}-01-01`, isoHi:`${d+9}-12-31`, zone:true};
+      }
+      case 'year': case 'month': case 'exact': {
+        const r = computeParts(e, {exact:'day', month:'month', year:'year'}[e.prec]);
+        if (r.error || r.incomplete) return r;
+        if (r.allUnknown || r.y == null) return {error:'The year is needed here. Choose “Not known” if you don’t know it.'};
+        return {kind:'date', ...r};
+      }
+    }
+    return {incomplete:'a value'};
+  }
+
+  function computePeriod(s){
+    const a = computeEnd(s.start), b = computeEnd(s.end);
+    if (a.error) return {error:`Start: ${a.error}`};
+    if (b.error) return {error:`End: ${b.error}`};
+    if (a.incomplete) return {incomplete:`Add ${a.incomplete} for the start.`};
+    if (b.incomplete) return {incomplete:`Add ${b.incomplete} for the end.`};
+    if (a.kind !== 'date' && b.kind !== 'date') return {error:'Give at least a start date or an end date.'};
+    if (a.kind === 'date' && b.kind === 'date' && a.lo >= b.hi) return {error:'The end is before the start.'};
+    let label;
+    if (a.kind === 'date' && b.kind === 'date') label = a.edtf === b.edtf ? a.label : `from ${a.label} to ${b.label}`;
+    else if (a.kind === 'date') label = b.kind === 'open' ? `from ${a.label} onwards` : `from ${a.label} (end not known)`;
+    else label = a.kind === 'open' ? `up to ${b.label}` : `until ${b.label} (start not known)`;
+    const pre = a.componentQ || b.componentQ, ea = pre && a.edtfPrefix ? a.edtfPrefix : a.edtf, eb = pre && b.edtfPrefix ? b.edtfPrefix : b.edtf;
+    return done({edtf: a.edtf === b.edtf && a.kind === 'date' ? a.edtf : `${ea}/${eb}`, label,
+      earliest:a.isoLo || null, latest:b.isoHi || null, unit:'span', period:{a, b}, warn:a.warn || b.warn,
+      unknownStart:a.kind === 'unknown', unknownEnd:b.kind === 'unknown'});
+  }
+
+  function compute(s){
+    if (!s || !s.mode) return null;
+    if (s.mode === 'period') return computePeriod(s);
+    const period = CFG.semantics === 'period';
+    switch (s.mode) {
+      case 'exact': case 'month': {
+        const p = toParts(s);
+        const prec = s.mode === 'exact' ? 'day' : (p.m || p.mq === 'unknown' ? 'month' : 'year');
+        const r = computeParts(p, prec);
+        if (r.error) return {error:r.error};
+        if (r.incomplete) return {incomplete:`Add ${r.incomplete}.`};
+        if (r.allUnknown) return compute({mode:'unknown'});
+        return done({edtf:r.edtf, label:r.label, earliest:r.isoLo, latest:r.isoHi, start:r.lo, end:r.hi,
+          sure:r.sure, unit:r.unit, warn:r.warn, mixed:r.mixed});
+      }
+      case 'decade': {
+        if (!s.decade) return {incomplete:'Pick a decade.'};
+        const d = +s.decade;
+        const parts = {any:[0,9], early:[0,3], mid:[4,6], late:[7,9]};
+        const part = s.part || 'any';
+        const [a,b] = parts[part];
+        let lo = d + a, hi = d + b;
+        if (CFG.min != null) lo = Math.max(lo, CFG.min);
+        if (CFG.max != null) hi = Math.min(hi, CFG.max);
+        if (lo > hi) return {error:'That part of the decade is outside the dates allowed here.'};
+        const word = part === 'mid' ? 'mid-' : part + ' ';
+        const clipped = lo !== d + a || hi !== d + b;
+        if (period) {
+          if (part === 'any' && !clipped) return done({edtf:String(d).slice(0,3), label:`the ${d}s (the whole decade)`,
+            earliest:`${d}-01-01`, latest:`${d+9}-12-31`, start:d, end:d+10, unit:'span'});
+          return done({edtf:`${lo}/${hi}`, label:`${part === 'any' ? 'the ' : 'the ' + word}${d}s (${lo} to ${hi})`,
+            earliest:`${lo}-01-01`, latest:`${hi}-12-31`, start:lo, end:hi+1, unit:'span'});
+        }
+        if (part === 'any') return done({edtf:`${String(d).slice(0,3)}X`, label:`sometime in the ${d}s`,
+          earliest:`${lo}-01-01`, latest:`${hi}-12-31`, start:lo, end:hi+1, range:true, unit:'decade'});
+        return done({edtf:`[${lo}..${hi}]`, label:`${word}${d}s (${lo}–${hi})`, earliest:`${lo}-01-01`, latest:`${hi}-12-31`,
+          start:lo, end:hi+1, range:true, unit:'decade'});
+      }
+      case 'between': {
+        const a = checkYear(s.from), b = checkYear(s.to);
+        if (a.error) return {error:a.error};
+        if (b.error) return {error:b.error};
+        if (a.incomplete || b.incomplete) return {incomplete:'Add both years.'};
+        if (a.y > b.y) return {error:'The first year should be the earlier one.'};
+        if (a.y === b.y) return compute({mode:'month', year:String(a.y), month:'', sure:'sure'});
+        if (period) return done({edtf:`${a.y}/${b.y}`, label:`from ${a.y} to ${b.y}`, earliest:`${a.y}-01-01`, latest:`${b.y}-12-31`,
+          start:a.y, end:b.y+1, unit:'span', warn:a.warn});
+        return done({edtf:`[${a.y}..${b.y}]`, label:`sometime between ${a.y} and ${b.y}`, earliest:`${a.y}-01-01`, latest:`${b.y}-12-31`,
+          start:a.y, end:b.y+1, range:true, unit:'range', warn:a.warn});
+      }
+      case 'ba': {
+        const yc = checkYear(s.year);
+        if (yc.error) return {error:yc.error};
+        if (yc.incomplete) return {incomplete:'Add the year.'};
+        const y = yc.y;
+        if (period) {
+          const open = (s.other || 'open') === 'open';
+          if (s.dir === 'after') return done(open
+            ? {edtf:`${y}/..`, label:`from ${y} onwards`, earliest:`${y}-01-01`, latest:null, start:y, end:null, openEnd:true, unit:'span'}
+            : {edtf:`${y}/`, label:`from ${y} (end not known)`, earliest:`${y}-01-01`, latest:null, start:y, end:null, unknownEnd:true, unit:'span'});
+          return done(open
+            ? {edtf:`../${y}`, label:`up to ${y}`, earliest:null, latest:`${y}-12-31`, start:null, end:y+1, openStart:true, unit:'span'}
+            : {edtf:`/${y}`, label:`until ${y} (start not known)`, earliest:null, latest:`${y}-12-31`, start:null, end:y+1, unknownStart:true, unit:'span'});
+        }
+        if (s.dir === 'after') {
+          const capped = CFG.max != null;
+          return done({edtf:`[${y}..]`, label:`in or after ${y}`, earliest:`${y}-01-01`, latest:capped ? `${CFG.max}-12-31` : null,
+            start:y, end:capped ? CFG.max + 1 : null, range:true, openEnd:!capped, unit:'after'});
+        }
+        const capped = CFG.min != null;
+        return done({edtf:`[..${y}]`, label:`in or before ${y}`, earliest:capped ? `${CFG.min}-01-01` : null, latest:`${y}-12-31`,
+          start:capped ? CFG.min : null, end:y+1, range:true, openStart:!capped, unit:'before', warn:yc.warn});
+      }
+      case 'betweenAny': {
+        const a = compute(s.a), b = compute(s.b);
+        if (!a || !b || a.incomplete || b.incomplete) return {error:'We didn’t understand one of the two dates.'};
+        if (a.error) return {error:a.error};
+        if (b.error) return {error:b.error};
+        if (!a.earliest || !b.latest) return {error:'Each side needs a year.'};
+        if (a.earliest > b.latest) return {error:'The first date should be the earlier one.'};
+        const len = r => r.unit === 'day' ? 10 : r.unit === 'month' ? 7 : 4;
+        const L = len(a) === len(b) ? len(a) : 10;
+        const strip = l => l.replace(/^sometime in /, '');
+        return done({edtf:`[${a.earliest.slice(0, L)}..${b.latest.slice(0, L)}]`, label:`sometime between ${strip(a.label)} and ${strip(b.label)}`,
+          earliest:a.earliest, latest:b.latest, start:a.start, end:b.end, range:true, unit:'range'});
+      }
+      case 'unknown':
+        return done({edtf: period ? '/' : 'XXXX', label:'not known', earliest:null, latest:null, unit:'unknown'});
+      case 'text': {
+        const raw = (s.raw || '').trim();
+        if (!raw) return {incomplete:'Type the date in your own words.'};
+        const p = parseText(raw);
+        if (p.error) return {error:p.error};
+        const r = compute(p.state);
+        if (r && p.note) r.note = p.note;
+        if (r) r.parsed = p.state;
+        return r;
+      }
+    }
+    return null;
+  }
+
+  function readState(){
+    if (CFG.semantics === 'period') return {mode:'period', start:readEnd('s'), end:readEnd('e')};
+    const mode = F.mode.value;
+    switch (mode) {
+      case 'exact': return {mode, d:F.exDay.value, dq:F.exDayQ.value, m:F.exMonth.value, mq:F.exMonthQ.value, y:F.exYear.value, yq:F.exYearQ.value};
+      case 'month': return {mode, m:F.moMonth.value, mq:F.moMonthQ.value, y:F.moYear.value, yq:F.moYearQ.value};
+      case 'decade': return {mode, decade:F.decade.value, part:F.part.value};
+      case 'between': return {mode, from:F.btFrom.value, to:F.btTo.value};
+      case 'ba': return {mode, dir:F.baDir.value, year:F.baYear.value, other:F.baOther.value};
+      case 'text': return {mode, raw:F.txt.value};
+      case 'unknown': return {mode};
+      default: return null;
+    }
+  }
+
+  function applyState(s){
+    F.mode.value = s.mode;
+    if (s.mode === 'exact') { F.exDay.value = s.day; F.exMonth.value = s.month; F.exYear.value = s.year; ['exDayQ','exMonthQ','exYearQ'].forEach(n => { F[n].value = s.sure || 'sure'; }); }
+    if (s.mode === 'month') { F.moMonth.value = s.month; F.moYear.value = s.year; ['moMonthQ','moYearQ'].forEach(n => { F[n].value = s.sure || 'sure'; }); }
+    if (s.mode === 'decade') { F.decade.value = s.decade; F.part.value = s.part || 'any'; cent = Math.floor(+s.decade/100)*100; drawDecades(); }
+    if (s.mode === 'between') { F.btFrom.value = s.from; F.btTo.value = s.to; }
+    if (s.mode === 'ba') { F.baDir.value = s.dir; F.baYear.value = s.year; F.baOther.value = s.other || 'open'; }
+    render();
+    const open = form.querySelector('.opt.open');
+    if (open) open.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'nearest'});
+  }
+
+  // ---------- advanced mode: real EDTF parser ----------
+  let EDTF = window.__EDTF || null, EDTF_FAILED = false, rawActive = false;
+  if (!EDTF) import('https://cdn.jsdelivr.net/npm/edtf@4.11.1/+esm')
+    .then(m => { EDTF = m; render(); })
+    .catch(() => { EDTF_FAILED = true; render(); });
+
+  const SEASON_NAMES = {21:'spring',22:'summer',23:'autumn',24:'winter',
+    25:'northern spring',26:'northern summer',27:'northern autumn',28:'northern winter',
+    29:'southern spring',30:'southern summer',31:'southern autumn',32:'southern winter',
+    33:'first quarter of',34:'second quarter of',35:'third quarter of',36:'fourth quarter of',
+    37:'first third of',38:'second third of',39:'last third of',40:'first half of',41:'second half of'};
+  const FRIENDLY = {Date:'a date', Year:'a year', Season:'a season or part of a year', Decade:'a decade', Century:'a century',
+    Interval:'a span from one date to another', Set:'one of several possible dates', List:'all of several dates'};
+  const fmtY = y => (y < 0 ? '-' : '') + String(Math.abs(y)).padStart(4, '0');
+  const yearStr = y => y <= 0 ? `${(1 - y).toLocaleString(LOCALE)} BCE` : y > 9999 ? y.toLocaleString(LOCALE) : String(y);
+  const daysIn = (y, m) => { const t = new Date(Date.UTC(2000, 0, 1)); t.setUTCFullYear(y, m, 0); return t.getUTCDate(); };
+  const dayMonth = (m0, d) => new Intl.DateTimeFormat(LOCALE, {day:'numeric', month:'long'}).format(new Date(2000, m0, d));
+  const intervalEnds = raw => { const i = raw.indexOf('/'); return [raw.slice(0, i).trim(), raw.slice(i + 1).trim()]; };
+
+  const isNode = x => !!x && typeof x === 'object';
+  function leafBounds(n){
+    const v = n.values, y = v[0];
+    switch (n.type || 'Date') {
+      case 'Year': case 'Season': return {lo:y, hi:y+1, isoLo:`${fmtY(y)}-01-01`, isoHi:`${fmtY(y)}-12-31`};
+      case 'Decade': return {lo:y*10, hi:y*10+10, isoLo:`${fmtY(y*10)}-01-01`, isoHi:`${fmtY(y*10+9)}-12-31`};
+      case 'Century': return {lo:y*100, hi:y*100+100, isoLo:`${fmtY(y*100)}-01-01`, isoHi:`${fmtY(y*100+99)}-12-31`};
+    }
+    const un = n.unspecified || 0, yu = un & 15, m0 = v[1], d = v[2];
+    if (yu === 15) return {lo:null, hi:null, isoLo:null, isoHi:null};
+    const span = yu === 8 ? 10 : yu === 12 ? 100 : yu === 14 ? 1000 : 1;
+    if (span > 1 || m0 == null || (un & 48)) return {lo:y, hi:y+span, isoLo:`${fmtY(y)}-01-01`, isoHi:`${fmtY(y+span-1)}-12-31`};
+    const m = m0 + 1;
+    if (d == null || (un & 192)) return {lo:y+(m-1)/12, hi:y+m/12, isoLo:`${fmtY(y)}-${pad(m)}-01`, isoHi:`${fmtY(y)}-${pad(m)}-${pad(daysIn(y, m))}`};
+    const lo = y + (m-1)/12 + (d-1)/365.25, iso = `${fmtY(y)}-${pad(m)}-${pad(d)}`;
+    return {lo, hi:lo + 1/365.25, isoLo:iso, isoHi:iso};
+  }
+  function nodeBounds(n){
+    if (n.type === 'Interval') {
+      const a = isNode(n.values[0]) ? leafBounds(n.values[0]) : null, b = isNode(n.values[1]) ? leafBounds(n.values[1]) : null;
+      return {lo:a ? a.lo : null, hi:b ? b.hi : null, isoLo:a ? a.isoLo : null, isoHi:b ? b.isoHi : null};
+    }
+    if (n.type === 'Set' || n.type === 'List') {
+      const items = n.values.flatMap(v => Array.isArray(v) ? [leafBounds(v[0]), leafBounds(v[1])] : [leafBounds(v)]).filter(x => x.lo != null);
+      if (!items.length) return {lo:null, hi:null, isoLo:null, isoHi:null};
+      const first = items.reduce((p, c) => c.lo < p.lo ? c : p), last = items.reduce((p, c) => c.hi > p.hi ? c : p);
+      return {lo:n.earlier ? null : first.lo, hi:n.later ? null : last.hi, isoLo:n.earlier ? null : first.isoLo, isoHi:n.later ? null : last.isoHi};
+    }
+    return leafBounds(n);
+  }
+
+  function rawDateLabel(n){
+    const [y, m0, d] = n.values, un = n.unspecified || 0, yu = un & 15;
+    const qOf = mask => {
+      const a = n.approximate === true || (typeof n.approximate === 'number' && (n.approximate & mask));
+      const u = n.uncertain === true || (typeof n.uncertain === 'number' && (n.uncertain & mask));
+      return a && u ? 'both' : a ? 'around' : u ? 'guess' : 'sure';
+    };
+    const yK = yu === 0, yPart = yu !== 0 && yu !== 15;
+    const hasM = m0 != null, hasD = d != null, mK = hasM && !(un & 48), dK = hasD && !(un & 192);
+    const yTxt = yK ? yearStr(y) : yPart ? `the ${y}s` : null;
+    const normal = yK && y >= 1000 && y <= 9999;
+    const join2 = (a, b) => b ? (yPart ? `${a}, ${b}` : `${a} ${b}`) : a;
+    let base;
+    if (mK && dK) base = normal ? fmtDay(y, m0+1, d) : join2(dayMonth(m0, d), yTxt);
+    else if (mK) base = normal ? fmtMonth(y, m0+1) : join2(MONTHS[m0], yTxt);
+    else if (dK) base = yTxt ? `day ${d} of an unknown month in ${yTxt}` : `day ${d}`;
+    else base = yTxt || 'date not known';
+    const notes = [];
+    if (yPart) notes.push('year unknown');
+    if (yu === 15 && (mK || dK)) notes.push('year not known');
+    if (hasM && !mK && !(dK && yTxt)) notes.push('month not known');
+    if (hasD && !dK) notes.push('day not known');
+    const qs = [['year', 15, yK || yPart], ['month', 48, mK], ['day', 192, dK]].filter(x => x[2]).map(([k, mask]) => [k, qOf(mask)]);
+    const uniform = qs.every(x => x[1] === qs[0][1]);
+    if (qs.length && uniform && qs[0][1] !== 'sure') base = q(base, qs[0][1]);
+    else if (!uniform) qs.forEach(([k, qq]) => { if (qq !== 'sure') notes.push(`${k} ${QWORD[qq]}`); });
+    return notes.length ? `${base} (${notes.join(', ')})` : base;
+  }
+  function nodeLabel(n, raw){
+    switch (n.type || 'Date') {
+      case 'Interval': {
+        const [sa, sb] = intervalEnds(raw);
+        const A = isNode(n.values[0]) ? nodeLabel(n.values[0]) : null, B = isNode(n.values[1]) ? nodeLabel(n.values[1]) : null;
+        if (A && B) return `from ${A} to ${B}`;
+        if (A) return sb === '..' ? `from ${A} onwards` : `from ${A} (end not known)`;
+        if (B) return sa === '..' ? `up to ${B}` : `until ${B} (start not known)`;
+        return 'start and end not known';
+      }
+      case 'Set': case 'List': {
+        const items = n.values.map(v => Array.isArray(v) ? `${nodeLabel(v[0])} to ${nodeLabel(v[1])}` : nodeLabel(v));
+        if (n.earlier && items.length) items[0] = `on or before ${items[0]}`;
+        if (n.later && items.length) items[items.length - 1] = `on or after ${items[items.length - 1]}`;
+        const join = (arr, w) => arr.length < 2 ? arr.join('') : `${arr.slice(0, -1).join(', ')} ${w} ${arr[arr.length - 1]}`;
+        if (items.length < 2) return items[0] || '';
+        return n.type === 'List' ? `all of ${join(items, 'and')}` : `one of ${join(items, 'or')}`;
+      }
+      case 'Year': return n.significant ? `around ${yearStr(n.values[0])} (${n.significant} significant digits)` : yearStr(n.values[0]);
+      case 'Season': return `${SEASON_NAMES[n.values[1]] || 'part ' + n.values[1] + ' of'} ${yearStr(n.values[0])}`;
+      case 'Decade': return `the ${n.values[0] * 10}s`;
+      case 'Century': return `the ${n.values[0] * 100}s`;
+      default: return rawDateLabel(n);
+    }
+  }
+  function parseErr(e, t){
+    const msg = String(e && e.message || '');
+    const col = msg.match(/col (\d+)/);
+    if (col) {
+      const c = +col[1], ch = t[c - 1];
+      return {col:c, msg: ch ? `Character ${c}, “${ch}”, isn’t expected there.` : 'Something is missing at the end.'};
+    }
+    if (/No possible parsings|@EOS/.test(msg)) return {msg:'This looks unfinished, or the parts don’t fit together.'};
+    return {msg:'This isn’t valid EDTF.'};
+  }
+  function computeRaw(raw){
+    const t = raw.trim();
+    if (!t) return {incomplete:'Type an EDTF value.'};
+    if (!EDTF) return {incomplete: EDTF_FAILED ? 'The EDTF parser couldn’t load.' : 'Loading the EDTF parser…'};
+    let p;
+    try { p = EDTF.parse(t); } catch (e) { return {error:parseErr(e, t).msg}; }
+    if (CFG.maxLevel != null && p.level > CFG.maxLevel) return {error:`This uses EDTF level ${p.level} features. This field accepts up to level ${CFG.maxLevel}.`};
+    const b = nodeBounds(p);
+    if (CFG.max != null && b.lo != null && b.lo >= CFG.max + 1) return {error:`That’s later than ${CFG.max}, the latest date allowed here.`};
+    if (CFG.min != null && b.hi != null && b.hi <= CFG.min) return {error:`That’s earlier than ${CFG.min}, the earliest date allowed here.`};
+    const iv = p.type === 'Interval' ? intervalEnds(t) : null;
+    return done({edtf:t, label:nodeLabel(p, t), earliest:b.isoLo, latest:b.isoHi, start:b.lo, end:b.hi,
+      unit:'raw', level:p.level, rawType:p.type, range:p.type === 'Set' || p.type === 'List',
+      openStart: !!p.earlier || (iv && iv[0] === '..'), openEnd: !!p.later || (iv && iv[1] === '..'),
+      unknownStart: !!iv && iv[0] === '', unknownEnd: !!iv && iv[1] === ''});
+  }
+  function checkWithParser(v){
+    if (!EDTF) return EDTF_FAILED ? 'parser unavailable' : 'parser loading';
+    try { return `valid, level ${EDTF.parse(v).level}`; } catch (e) { return 'REJECTED: ' + String(e.message).split('\n')[0]; }
+  }
+  function updateAdv(r){
+    if (!CFG.advanced) return;
+    if (!rawActive && document.activeElement !== F.advTxt) F.advTxt.value = r && r.ok ? r.edtf : '';
+    const st = $('advStatus'); st.textContent = ''; st.className = 'adv-status';
+    const v = F.advTxt.value.trim();
+    if (!v) { st.textContent = 'Empty. Type an EDTF value, or use the options above.'; return; }
+    if (!EDTF) { st.textContent = EDTF_FAILED ? 'The EDTF parser couldn’t load, so this can’t be checked.' : 'Loading the EDTF parser…'; return; }
+    try {
+      const p = EDTF.parse(v);
+      st.classList.add('ok');
+      st.textContent = `✓ Valid EDTF, level ${p.level}: ${FRIENDLY[p.type] || p.type}.`;
+    } catch (e) {
+      const fe = parseErr(e, v);
+      st.classList.add('bad');
+      st.append(document.createTextNode('✗ ' + fe.msg));
+      if (fe.col) {
+        const code = document.createElement('code'), mk = document.createElement('mark');
+        mk.textContent = v[fe.col - 1] || ' ';
+        code.append(document.createTextNode(v.slice(0, fe.col - 1)), mk, document.createTextNode(v.slice(fe.col)));
+        st.append(code);
+      }
+    }
+  }
+
+  // tokens and examples for advanced mode
+  [['~','roughly'],['?','not certain'],['%','both'],['X','unknown digit'],['/','from … to'],['..','open end'],['[]','one of'],['{}','all of'],[',','next item'],['-21','season']].forEach(([tok, what]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'tok';
+    b.innerHTML = '<code></code><span></span>';
+    b.querySelector('code').textContent = tok; b.querySelector('span').textContent = what;
+    b.addEventListener('click', () => {
+      const el = F.advTxt, s0 = el.selectionStart ?? el.value.length, s1 = el.selectionEnd ?? s0;
+      const pair = tok === '[]' || tok === '{}';
+      const ins = pair ? tok[0] + el.value.slice(s0, s1) + tok[1] : tok;
+      el.value = el.value.slice(0, s0) + ins + el.value.slice(s1);
+      const caret = pair ? s0 + ins.length - 1 : s0 + ins.length;
+      el.focus(); el.setSelectionRange(caret, caret);
+      rawActive = true; render();
+    });
+    $('tokens').append(b);
+  });
+  ['[1667,1668,1670..1672]','{1960,1961-12}','?2004-06-~11','189X/2020-12-25','2001-34','1950S2','-0500','[..1760-12-03]'].forEach(t => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'eg'; b.textContent = t;
+    b.addEventListener('click', () => { F.advTxt.value = t; rawActive = true; render(); F.advTxt.focus(); });
+    $('advEgs').append(b);
+  });
+  $('advToggle').addEventListener('click', () => {
+    const open = $('advBody').hidden;
+    $('advBody').hidden = !open;
+    $('advToggle').setAttribute('aria-expanded', String(open));
+    if (open) F.advTxt.focus();
+  });
+
+  // ---------- rendering ----------
+  const capFirst = s => s.charAt(0).toUpperCase() + s.slice(1);
+  function caption(r){
+    if (r.unit === 'raw') return `Valid EDTF, level ${r.level}: ${FRIENDLY[r.rawType] || r.rawType}.`;
+    if (r.mixed && !r.period) return 'The notes in brackets show which parts are rough, uncertain or not known.';
+    if (r.unit === 'unknown') return 'That’s fine. It can be filled in later.';
+    if (r.period) {
+      const {a, b} = r.period, bits = [];
+      if (a.zone || b.zone) bits.push('Shaded ends show where in the decade it started or ended.');
+      if (a.sure === 'around' || b.sure === 'around') bits.push('Soft edges mean roughly then.');
+      if (a.sure === 'guess' || b.sure === 'guess' || a.kind === 'unknown' || b.kind === 'unknown') bits.push('A “?” marks an end that isn’t certain or isn’t known.');
+      if (b.kind === 'open') bits.push('It’s still going.');
+      if (a.kind === 'open') bits.push('There’s no set start.');
+      return bits.join(' ') || 'The whole span shown.';
+    }
+    if (r.unit === 'span') {
+      if (r.openEnd) return 'Continues, with no end date.';
+      if (r.unknownEnd) return 'It did end, but when isn’t known.';
+      if (r.openStart) return 'No set start date.';
+      if (r.unknownStart) return 'It did start somewhere, but when isn’t known.';
+      return 'The whole span shown.';
+    }
+    if (r.openStart) return 'Any time up to the end of that year.';
+    if (r.openEnd) return 'Any time from the start of that year onwards.';
+    if (r.range) return 'One moment, somewhere in the shaded range.';
+    if (r.sure === 'around') return 'Roughly then. The soft edges mean it could be a little either side.';
+    if (r.sure === 'guess') return 'A best guess. The dashed outline means it might not be right.';
+    return {day:'A single day.', month:'Sometime that month.', year:'Sometime that year.', season:'Sometime that season.'}[r.unit] || '';
+  }
+
+  function drawAxis(lo, hi){
+    const pct = v => ((v - lo) / (hi - lo)) * 100;
+    const span = hi - lo;
+    const step = [1,2,5,10,20,25,50,100,200,500].find(st => span / st <= 7) || 1000;
+    const axis = $('tlAxis'); axis.textContent = '';
+    for (let y = Math.ceil(lo / step) * step; y <= hi; y += step) {
+      const p = pct(y);
+      if (p < 4 || p > 96) continue;
+      const t = document.createElement('span');
+      t.style.left = `${p}%`; t.textContent = y;
+      axis.append(t);
+    }
+  }
+  function drawPeriod(r){
+    const {a, b} = r.period;
+    $('tlBar').hidden = true; $('tlQ').hidden = true; $('tlFlag').textContent = '';
+    const segs = $('tlSegs'); segs.textContent = '';
+    const known = [a, b].filter(x => x.kind === 'date');
+    const minV = Math.min(...known.map(x => x.lo)), maxV = Math.max(...known.map(x => x.hi));
+    const padY = Math.max(5, (maxV - minV) * 0.25);
+    let lo = Math.floor((minV - padY) / 5) * 5, hi = Math.ceil((maxV + padY) / 5) * 5;
+    const reach = Math.max(20, maxV - minV);
+    if (a.kind !== 'date') lo = Math.floor((minV - reach) / 5) * 5;
+    if (b.kind !== 'date') hi = Math.ceil((maxV + reach) / 5) * 5;
+    const pct = v => ((v - lo) / (hi - lo)) * 100;
+    const add = (from, to, cls, minW) => {
+      const el = document.createElement('div');
+      el.className = 'tl-bar ' + cls;
+      const l = pct(from); let w = pct(to) - l;
+      if (minW && w < minW) w = minW;
+      el.style.left = `${l}%`; el.style.width = `${Math.max(0, w)}%`;
+      segs.append(el); return el;
+    };
+    const mark = (x, text) => {
+      const q = document.createElement('div'); q.className = 'tl-q'; q.textContent = text || '?';
+      q.style.left = `${Math.min(97, Math.max(3, x))}%`; segs.append(q);
+    };
+    const flag = (x, text) => {
+      const f = document.createElement('div'); f.className = 'tl-flag'; f.textContent = text;
+      f.style.left = `${Math.min(88, Math.max(12, x))}%`; segs.append(f);
+    };
+    const coreFrom = a.kind === 'date' ? (a.zone ? a.hi : a.lo) : lo;
+    const coreTo = b.kind === 'date' ? (b.zone ? b.lo : b.hi) : hi;
+    const cls = [];
+    if (a.kind !== 'date' || (a.sure === 'around' && !a.zone)) cls.push('fade-start');
+    if (b.kind !== 'date' || (b.sure === 'around' && !b.zone)) cls.push('fade-end');
+    if (coreTo > coreFrom) add(coreFrom, coreTo, cls.join(' '), 0.8);
+    if (a.zone) { add(a.lo, a.hi, 'zone'); flag(pct((a.lo + a.hi) / 2), 'started in here'); }
+    if (b.zone) { add(b.lo, b.hi, 'zone'); flag(pct((b.lo + b.hi) / 2), 'ended in here'); }
+    if (a.kind === 'unknown') mark(4);
+    if (b.kind === 'unknown') mark(96);
+    if (a.sure === 'guess') mark(pct(a.lo));
+    if (b.sure === 'guess') mark(pct(b.hi));
+    drawAxis(lo, hi);
+  }
+
+  function drawTimeline(r){
+    const tl = $('timeline');
+    if (r.unit === 'unknown') { tl.hidden = true; return; }
+    tl.hidden = false;
+    if (r.period) { drawPeriod(r); return; }
+    if ((r.start == null && r.end == null) || (r.start == null && !r.openStart && !r.unknownStart)) { tl.hidden = true; return; }
+    if (r.start != null && r.end != null && r.end - r.start > 5000) { tl.hidden = true; return; }
+    $('tlSegs').textContent = ''; $('tlBar').hidden = false;
+    let start = r.start, end = r.end, lo, hi;
+    const approx = r.sure === 'around';
+    const fadeStart = r.openStart || r.unknownStart, fadeEnd = r.openEnd || r.unknownEnd;
+    if (approx && (end - start) > 0.05) { const ext = Math.max(1, (end - start) * 0.5); start -= ext; end += ext; }
+    if (fadeStart) { hi = Math.ceil((end + 8) / 5) * 5; lo = hi - 70; start = lo; }
+    else if (fadeEnd) { lo = Math.floor((start - 12) / 5) * 5; hi = lo + 70; end = hi; }
+    else { const padY = Math.max(6, (end - start) * 0.8); lo = Math.floor((start - padY) / 5) * 5; hi = Math.ceil((end + padY) / 5) * 5; }
+    const pct = v => ((v - lo) / (hi - lo)) * 100;
+    const left = pct(start), width = pct(end) - left;
+    const isPoint = width < 1.5 && !r.range;
+    const bar = $('tlBar');
+    bar.className = 'tl-bar';
+    if (isPoint) bar.classList.add('point');
+    if (r.range) bar.classList.add('range');
+    if (approx) bar.classList.add('approx');
+    if (r.sure === 'guess') bar.classList.add('uncertain');
+    if (fadeStart) bar.classList.add('fade-start');
+    if (fadeEnd) bar.classList.add('fade-end');
+    bar.style.left = isPoint ? `${left + width/2}%` : `${left}%`;
+    bar.style.width = isPoint ? '' : `${width}%`;
+
+    const qm = $('tlQ');
+    qm.hidden = !(r.unknownStart || r.unknownEnd);
+    if (r.unknownEnd) qm.style.left = '90%';
+    if (r.unknownStart) qm.style.left = '10%';
+
+    const flag = $('tlFlag');
+    flag.textContent = r.range ? 'somewhere in here' : '';
+    flag.style.left = `${Math.min(88, Math.max(12, left + width/2))}%`;
+
+    const span = hi - lo;
+    const step = [1,2,5,10,20,25,50,100].find(st => span / st <= 7) || 100;
+    const axis = $('tlAxis'); axis.textContent = '';
+    for (let y = Math.ceil(lo / step) * step; y <= hi; y += step) {
+      const p = pct(y);
+      if (p < 4 || p > 96) continue;
+      const t = document.createElement('span');
+      t.style.left = `${p}%`; t.textContent = y;
+      axis.append(t);
+    }
+  }
+
+  function emit(r){
+    const detail = r && r.ok
+      ? {value:r.edtf, valid:true, label:r.label, earliest:r.earliest, latest:r.latest, level: EDTF ? (() => { try { return EDTF.parse(r.edtf).level; } catch (e) { return null; } })() : null}
+      : {value:null, valid:false};
+    form.dispatchEvent(new CustomEvent('edtf-change', {detail}));
+  }
+  form.addEventListener('edtf-change', e => { $('tJson').textContent = JSON.stringify(e.detail, null, 2); });
+
+  let lastParsed = null;
+  function render(){
+    form.querySelectorAll('select.qsel').forEach(qs => {
+      const t = F[qs.dataset.for];
+      if (t) t.disabled = qs.value === 'unknown';
+      qs.classList.toggle('is-set', qs.value !== 'sure');
+    });
+    const s = readState();
+    const useRaw = rawActive && CFG.advanced;
+    const r = useRaw ? computeRaw(F.advTxt.value) : compute(s);
+    form.classList.toggle('raw-active', useRaw);
+    updateAdv(r);
+    form.querySelectorAll('.opt').forEach(o => o.classList.toggle('open', !!s && o.dataset.mode === s.mode));
+    const out = $('resultText'), cap = $('resultCaption'), msg = $('resultMsg');
+    out.className = 'result-text'; msg.hidden = true; msg.className = 'msg'; msg.textContent = '';
+    lastParsed = r && r.parsed && !['unknown', 'betweenAny'].includes(r.parsed.mode) ? r.parsed : null;
+    $('tuneBtn').hidden = !lastParsed;
+    $('nextBtn').disabled = !(r && r.ok);
+
+    if (!r || r.incomplete || r.error) {
+      out.textContent = !r ? 'Choose an option above' : r.incomplete ? r.incomplete : 'Not quite right yet';
+      out.classList.add('muted');
+      cap.textContent = '';
+      $('timeline').hidden = true;
+      if (r && r.error) { msg.textContent = r.error; msg.classList.add('err'); msg.hidden = false; }
+      $('tEdtf').textContent = '–'; $('tEarliest').textContent = '–'; $('tLatest').textContent = '–'; $('tCheck').textContent = '–';
+      emit(null);
+      return;
+    }
+    out.textContent = capFirst(r.label);
+    cap.textContent = caption(r);
+    drawTimeline(r);
+    const info = r.note || r.warn;
+    if (info) { msg.textContent = info; msg.hidden = false; }
+    $('tEdtf').textContent = r.edtf;
+    $('tEarliest').textContent = r.earliest || (r.unknownStart ? 'unknown' : 'open');
+    $('tLatest').textContent = r.latest || (r.unknownEnd ? 'unknown' : 'open');
+    $('tCheck').textContent = checkWithParser(r.edtf);
+    emit(r);
+  }
+
+  $('tuneBtn').addEventListener('click', () => { if (lastParsed) applyState(lastParsed); });
+  form.addEventListener('click', e => { if (e.target.closest('fieldset') && e.target.closest('button')) rawActive = false; }, true);
+  form.addEventListener('input', e => {
+    if (e.target.name === 'preset') return;
+    if (e.target.name === 'advTxt') { rawActive = true; render(); return; }
+    rawActive = false;
+    if (e.target.name === 'ptxt') { onPeriodText(); return; }
+    render();
+  });
+  form.addEventListener('change', e => {
+    if (e.target.name === 'preset' || e.target.name === 'ptxt' || e.target.name === 'advTxt') return;
+    rawActive = false;
+    if (/^[se]Prec$/.test(e.target.name)) syncEnd(e.target.name[0]);
+    render();
+  });
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const r = compute(readState());
+    if (!r || !r.ok) return;
+    $('doneText').textContent = capFirst(r.label);
+    form.hidden = true;
+    $('donePanel').hidden = false;
+    $('changeBtn').focus();
+  });
+  $('changeBtn').addEventListener('click', () => { $('donePanel').hidden = true; form.hidden = false; $('nextBtn').focus(); });
+
+  applyConfig('generic');
+})();
+</script>
+</body>
+</html>
