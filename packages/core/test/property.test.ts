@@ -73,6 +73,14 @@ describe('generate (property)', () => {
           expect(() => parse(r.value ?? '')).not.toThrow()
           if (r.earliest && r.latest)
             expect(compareIso(r.earliest, r.latest)).toBeLessThanOrEqual(0)
+          // A known end has a bound: 196X/198X once came out unbounded
+          if (r.start === 'date') expect(r.earliest).not.toBeNull()
+          if (r.end === 'date') expect(r.latest).not.toBeNull()
+          if (s.kind === 'period') {
+            const kind = (e: Endpoint) =>
+              e.kind === 'open' || e.kind === 'unknown' ? e.kind : 'date'
+            expect([r.start, r.end]).toEqual([kind(s.start), kind(s.end)])
+          }
         }
       }),
       { numRuns: 5000 },

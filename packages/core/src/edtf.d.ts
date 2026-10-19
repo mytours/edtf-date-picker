@@ -54,18 +54,21 @@ declare module 'edtf' {
 
   export type LeafNode = DateNode | YearNode | DecadeNode | CenturyNode | SeasonNode
 
+  /** Interval and set members with X digits (196X) come without a `type` */
+  export type MemberNode = LeafNode | Omit<DateNode, 'type'>
+
   export interface IntervalNode {
     type: 'Interval'
     level: number
-    /** null for both open (`..`) and unknown (empty) ends */
-    values: [LeafNode | null, LeafNode | null]
+    /** Infinity for an open end (`..`), null for an unknown one (empty) */
+    values: [MemberNode | number | null, MemberNode | number | null]
   }
 
   export interface SetNode {
     type: 'Set' | 'List'
     level: number
     /** A two-element array is a range `a..b` */
-    values: (LeafNode | [LeafNode, LeafNode])[]
+    values: (MemberNode | [MemberNode, MemberNode])[]
     earlier?: boolean
     later?: boolean
   }

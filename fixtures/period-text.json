@@ -64,8 +64,8 @@
     },
     "edtf": "196X/198X",
     "level": 2,
-    "earliest": null,
-    "latest": null,
+    "earliest": "1960-01-01",
+    "latest": "1989-12-31",
     "label": {
       "en": "1960s (year unknown) to 1980s (year unknown)"
     },

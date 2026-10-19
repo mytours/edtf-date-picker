@@ -89,6 +89,17 @@ describe('bounds', () => {
       expect(bounds('/1950')).toMatchObject({ earliest: null, start: 'unknown' })
     })
 
+    it('bounds ends with X digits (edtf.js leaves their type out)', () => {
+      expect(bounds('196X/198X')).toEqual({
+        earliest: '1960-01-01',
+        latest: '1989-12-31',
+        start: 'date',
+        end: 'date',
+      })
+      expect(bounds('1950/198X')).toMatchObject({ latest: '1989-12-31', end: 'date' })
+      expect(bounds('[196X..]')).toMatchObject({ earliest: '1960-01-01', end: 'open' })
+    })
+
     it('treats an XXXX end as unknown', () => {
       expect(bounds('XXXX/1950')).toMatchObject({ earliest: null, start: 'unknown' })
     })

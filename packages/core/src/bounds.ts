@@ -1,4 +1,4 @@
-import { parse, type LeafNode, type ParseResult } from 'edtf'
+import { parse, type LeafNode, type MemberNode, type ParseResult } from 'edtf'
 import { compareIso, daysInMonth, isoDate } from './dates.js'
 
 /** What is known about one end of a value */
@@ -97,6 +97,12 @@ function leafSpan(node: LeafNode): Span | null {
   }
 }
 
+/** A member of an interval or set as a typed node, or null for an open or unknown end */
+export function asLeaf(member: MemberNode | number | null): LeafNode | null {
+  if (member == null || typeof member === 'number') return null
+  return 'type' in member ? member : { ...member, type: 'Date' }
+}
+
 const min = (a: string, b: string): string => (compareIso(a, b) <= 0 ? a : b)
 const max = (a: string, b: string): string => (compareIso(a, b) >= 0 ? a : b)
 
@@ -113,8 +119,10 @@ export function boundsOf(tree: ParseResult, input: string): Bounds {
       const slash = input.indexOf('/')
       const startKind = intervalEnd(input.slice(0, slash))
       const endKind = intervalEnd(input.slice(slash + 1))
-      const a = tree.values[0] ? leafSpan(tree.values[0]) : null
-      const b = tree.values[1] ? leafSpan(tree.values[1]) : null
+      const lower = asLeaf(tree.values[0])
+      const upper = asLeaf(tree.values[1])
+      const a = lower ? leafSpan(lower) : null
+      const b = upper ? leafSpan(upper) : null
       return {
         earliest: a?.earliest ?? null,
         latest: b?.latest ?? null,
@@ -125,7 +133,10 @@ export function boundsOf(tree: ParseResult, input: string): Bounds {
     case 'Set':
     case 'List': {
       const spans = tree.values
-        .flatMap((v) => (Array.isArray(v) ? [leafSpan(v[0]), leafSpan(v[1])] : [leafSpan(v)]))
+        .flatMap((v) => (Array.isArray(v) ? [v[0], v[1]] : [v]))
+        .map((v) => asLeaf(v))
+        .filter((v): v is LeafNode => v != null)
+        .map(leafSpan)
         .filter((s): s is Span => s != null)
       if (spans.length === 0)
         return { earliest: null, latest: null, start: 'unknown', end: 'unknown' }
